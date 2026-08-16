@@ -17,6 +17,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
+import { Route as AppAdminCompaniesRouteImport } from './routes/_app.admin.companies'
 import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
 import { Route as AppApplicationsApplicationIdRouteImport } from './routes/_app.applications.$applicationId'
 import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
@@ -61,6 +62,11 @@ const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAdminRoute,
 } as any)
+const AppAdminCompaniesRoute = AppAdminCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 const AppApplicationsIndexRoute = AppApplicationsIndexRouteImport.update({
   id: '/applications/',
   path: '/applications/',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/companies': typeof AppAdminCompaniesRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/admin/': typeof AppAdminIndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/companies': typeof AppAdminCompaniesRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/admin': typeof AppAdminIndexRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/admin/companies': typeof AppAdminCompaniesRoute
   '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/_app/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/_app/admin/': typeof AppAdminIndexRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/companies'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/admin/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/companies'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/admin'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/profile'
     | '/_app/settings'
+    | '/_app/admin/companies'
     | '/_app/applications/$applicationId'
     | '/_app/drives/$driveId'
     | '/_app/admin/'
@@ -228,6 +240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/_app/admin/companies': {
+      id: '/_app/admin/companies'
+      path: '/companies'
+      fullPath: '/admin/companies'
+      preLoaderRoute: typeof AppAdminCompaniesRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/_app/applications/': {
       id: '/_app/applications/'
       path: '/applications'
@@ -260,10 +279,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAdminRouteChildren {
+  AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
   AppAdminIndexRoute: typeof AppAdminIndexRoute
 }
 
 const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminCompaniesRoute: AppAdminCompaniesRoute,
   AppAdminIndexRoute: AppAdminIndexRoute,
 }
 
