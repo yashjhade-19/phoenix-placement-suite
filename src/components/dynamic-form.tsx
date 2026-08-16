@@ -64,7 +64,7 @@ export function DynamicFormField({
           <Textarea
             id={id}
             rows={4}
-            disabled={disabled}
+            disabled={!!disabled}
             placeholder={field.placeholder ?? ""}
             value={stringValue}
             onChange={(e) => onChange(e.target.value)}
@@ -72,7 +72,7 @@ export function DynamicFormField({
         );
       case "dropdown":
         return (
-          <Select value={stringValue} onValueChange={onChange} disabled={disabled}>
+          <Select value={stringValue} onValueChange={onChange} disabled={!!disabled}>
             <SelectTrigger id={id}>
               <SelectValue placeholder={field.placeholder ?? "Select an option"} />
             </SelectTrigger>
@@ -87,7 +87,7 @@ export function DynamicFormField({
         );
       case "radio":
         return (
-          <RadioGroup value={stringValue} onValueChange={onChange} disabled={disabled}>
+          <RadioGroup value={stringValue} onValueChange={onChange} disabled={!!disabled}>
             {field.options.map((option) => (
               <div key={option} className="flex items-center gap-2">
                 <RadioGroupItem value={option} id={`${id}-${option}`} />
@@ -106,7 +106,7 @@ export function DynamicFormField({
               <div key={option} className="flex items-center gap-2">
                 <Checkbox
                   id={`${id}-${option}`}
-                  disabled={disabled}
+                  disabled={!!disabled}
                   checked={selected.includes(option)}
                   onCheckedChange={(checked) =>
                     onChange(
@@ -129,7 +129,7 @@ export function DynamicFormField({
           <div className="flex items-center gap-2">
             <Checkbox
               id={id}
-              disabled={disabled}
+              disabled={!!disabled}
               checked={value === true}
               onCheckedChange={(checked) => onChange(checked === true)}
             />
@@ -143,7 +143,7 @@ export function DynamicFormField({
           <Input
             id={id}
             type="date"
-            disabled={disabled}
+            disabled={!!disabled}
             value={stringValue}
             onChange={(e) => onChange(e.target.value)}
           />
@@ -153,7 +153,7 @@ export function DynamicFormField({
           <Input
             id={id}
             type="number"
-            disabled={disabled}
+            disabled={!!disabled}
             placeholder={field.placeholder ?? ""}
             value={stringValue}
             onChange={(e) => onChange(e.target.value)}
@@ -164,7 +164,7 @@ export function DynamicFormField({
           <Input
             id={id}
             type={field.field_type === "email" ? "email" : "text"}
-            disabled={disabled}
+            disabled={!!disabled}
             placeholder={field.placeholder ?? ""}
             value={stringValue}
             onChange={(e) => onChange(e.target.value)}
