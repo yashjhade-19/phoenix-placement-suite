@@ -212,21 +212,30 @@ function SignUpForm() {
         emailRedirectTo: window.location.origin,
         data: {
           full_name: parsed.data.fullName,
-          roll_number: parsed.data.rollNumber,
-          branch: parsed.data.branch,
-          graduation_year: parsed.data.graduationYear,
+          enrollment_no: parsed.data.rollNumber,
         },
       },
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast.error(error.message);
       return;
     }
     if (!data.session) {
+      setLoading(false);
       toast.success("Account created. Check your email to confirm, then sign in.");
       return;
     }
+    await supabase
+      .from("students")
+      .update({
+        branch: parsed.data.branch,
+        graduation_year: parsed.data.graduationYear,
+        enrollment_no: parsed.data.rollNumber,
+        full_name: parsed.data.fullName,
+      })
+      .eq("user_id", data.session.user.id);
+    setLoading(false);
     toast.success("Welcome to HirePhoenix");
     navigate({ to: "/dashboard", replace: true });
   }
