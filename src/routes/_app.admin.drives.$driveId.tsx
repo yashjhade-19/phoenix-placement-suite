@@ -28,16 +28,24 @@ export const Route = createFileRoute("/_app/admin/drives/$driveId")({
   component: AdminDriveDetail,
 });
 
-const DRIVE_STATUSES = ["draft", "open", "closed", "completed"];
+const DRIVE_STATUSES = [
+  "draft",
+  "published",
+  "applications_open",
+  "applications_closed",
+  "selection_in_progress",
+  "completed",
+] as const;
+type DriveStatus = (typeof DRIVE_STATUSES)[number];
 const APP_STATUSES = [
   "applied",
   "under_review",
   "shortlisted",
-  "interview",
   "selected",
   "rejected",
   "withdrawn",
-];
+] as const;
+type AppStatus = (typeof APP_STATUSES)[number];
 
 function AdminDriveDetail() {
   const { driveId } = useParams({ from: "/_app/admin/drives/$driveId" });

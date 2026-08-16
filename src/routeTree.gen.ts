@@ -24,6 +24,7 @@ import { Route as AppApplicationsApplicationIdRouteImport } from './routes/_app.
 import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
 import { Route as AppDrivesDriveIdRouteImport } from './routes/_app.drives.$driveId'
 import { Route as AppAdminDrivesIndexRouteImport } from './routes/_app.admin.drives.index'
+import { Route as AppAdminDrivesDriveIdRouteImport } from './routes/_app.admin.drives.$driveId'
 import { Route as AppAdminDrivesNewRouteImport } from './routes/_app.admin.drives.new'
 
 const IndexRoute = IndexRouteImport.update({
@@ -101,6 +102,11 @@ const AppAdminDrivesIndexRoute = AppAdminDrivesIndexRouteImport.update({
   path: '/drives/',
   getParentRoute: () => AppAdminRoute,
 } as any)
+const AppAdminDrivesDriveIdRoute = AppAdminDrivesDriveIdRouteImport.update({
+  id: '/drives/$driveId',
+  path: '/drives/$driveId',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 const AppAdminDrivesNewRoute = AppAdminDrivesNewRouteImport.update({
   id: '/drives/new',
   path: '/drives/new',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AppAdminIndexRoute
   '/applications/': typeof AppApplicationsIndexRoute
   '/drives/': typeof AppDrivesIndexRoute
+  '/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
   '/admin/drives/new': typeof AppAdminDrivesNewRoute
   '/admin/drives/': typeof AppAdminDrivesIndexRoute
 }
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AppAdminIndexRoute
   '/applications': typeof AppApplicationsIndexRoute
   '/drives': typeof AppDrivesIndexRoute
+  '/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
   '/admin/drives/new': typeof AppAdminDrivesNewRoute
   '/admin/drives': typeof AppAdminDrivesIndexRoute
 }
@@ -156,6 +164,7 @@ export interface FileRoutesById {
   '/_app/admin/': typeof AppAdminIndexRoute
   '/_app/applications/': typeof AppApplicationsIndexRoute
   '/_app/drives/': typeof AppDrivesIndexRoute
+  '/_app/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
   '/_app/admin/drives/new': typeof AppAdminDrivesNewRoute
   '/_app/admin/drives/': typeof AppAdminDrivesIndexRoute
 }
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/applications/'
     | '/drives/'
+    | '/admin/drives/$driveId'
     | '/admin/drives/new'
     | '/admin/drives/'
   fileRoutesByTo: FileRoutesByTo
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/applications'
     | '/drives'
+    | '/admin/drives/$driveId'
     | '/admin/drives/new'
     | '/admin/drives'
   id:
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/_app/admin/'
     | '/_app/applications/'
     | '/_app/drives/'
+    | '/_app/admin/drives/$driveId'
     | '/_app/admin/drives/new'
     | '/_app/admin/drives/'
   fileRoutesById: FileRoutesById
@@ -325,6 +337,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminDrivesIndexRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/_app/admin/drives/$driveId': {
+      id: '/_app/admin/drives/$driveId'
+      path: '/drives/$driveId'
+      fullPath: '/admin/drives/$driveId'
+      preLoaderRoute: typeof AppAdminDrivesDriveIdRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/_app/admin/drives/new': {
       id: '/_app/admin/drives/new'
       path: '/drives/new'
@@ -339,6 +358,7 @@ interface AppAdminRouteChildren {
   AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
   AppAdminStudentsRoute: typeof AppAdminStudentsRoute
   AppAdminIndexRoute: typeof AppAdminIndexRoute
+  AppAdminDrivesDriveIdRoute: typeof AppAdminDrivesDriveIdRoute
   AppAdminDrivesNewRoute: typeof AppAdminDrivesNewRoute
   AppAdminDrivesIndexRoute: typeof AppAdminDrivesIndexRoute
 }
@@ -347,6 +367,7 @@ const AppAdminRouteChildren: AppAdminRouteChildren = {
   AppAdminCompaniesRoute: AppAdminCompaniesRoute,
   AppAdminStudentsRoute: AppAdminStudentsRoute,
   AppAdminIndexRoute: AppAdminIndexRoute,
+  AppAdminDrivesDriveIdRoute: AppAdminDrivesDriveIdRoute,
   AppAdminDrivesNewRoute: AppAdminDrivesNewRoute,
   AppAdminDrivesIndexRoute: AppAdminDrivesIndexRoute,
 }
