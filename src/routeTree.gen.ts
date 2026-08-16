@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
+import { Route as AppDrivesDriveIdRouteImport } from './routes/_app.drives.$driveId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,15 +34,22 @@ const AppDrivesIndexRoute = AppDrivesIndexRouteImport.update({
   path: '/drives/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDrivesDriveIdRoute = AppDrivesDriveIdRouteImport.update({
+  id: '/drives/$driveId',
+  path: '/drives/$driveId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/drives/': typeof AppDrivesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/drives': typeof AppDrivesIndexRoute
 }
 export interface FileRoutesById {
@@ -49,14 +57,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/_app/drives/': typeof AppDrivesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/drives/'
+  fullPaths: '/' | '/dashboard' | '/drives/$driveId' | '/drives/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/drives'
-  id: '__root__' | '/' | '/_app' | '/_app/dashboard' | '/_app/drives/'
+  to: '/' | '/dashboard' | '/drives/$driveId' | '/drives'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/dashboard'
+    | '/_app/drives/$driveId'
+    | '/_app/drives/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -94,16 +109,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDrivesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/drives/$driveId': {
+      id: '/_app/drives/$driveId'
+      path: '/drives/$driveId'
+      fullPath: '/drives/$driveId'
+      preLoaderRoute: typeof AppDrivesDriveIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDrivesDriveIdRoute: typeof AppDrivesDriveIdRoute
   AppDrivesIndexRoute: typeof AppDrivesIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
+  AppDrivesDriveIdRoute: AppDrivesDriveIdRoute,
   AppDrivesIndexRoute: AppDrivesIndexRoute,
 }
 
