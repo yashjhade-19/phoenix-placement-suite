@@ -85,7 +85,7 @@ export type ApplicationRow = Application & {
   drive: (Drive & { company: Company | null }) | null;
 };
 
-export async function listApplications(filters?: { driveId?: string; studentId?: string }) {
+export async function listApplications(filters?: { driveId?: string | undefined; studentId?: string | undefined }) {
   let query = supabase
     .from("applications")
     .select("*, student:students(*), drive:drives(*, company:companies(*))")
