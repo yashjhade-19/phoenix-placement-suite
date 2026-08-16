@@ -10,33 +10,260 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppAdminRouteImport } from './routes/_app.admin'
+import { Route as AppAnnouncementsRouteImport } from './routes/_app.announcements'
+import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
+import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
+import { Route as AppAdminAnnouncementsRouteImport } from './routes/_app.admin.announcements'
+import { Route as AppAdminApplicationsRouteImport } from './routes/_app.admin.applications'
+import { Route as AppAdminCompaniesRouteImport } from './routes/_app.admin.companies'
+import { Route as AppAdminSettingsRouteImport } from './routes/_app.admin.settings'
+import { Route as AppAdminStudentsRouteImport } from './routes/_app.admin.students'
+import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
+import { Route as AppApplicationsApplicationIdRouteImport } from './routes/_app.applications.$applicationId'
+import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
+import { Route as AppDrivesDriveIdRouteImport } from './routes/_app.drives.$driveId'
+import { Route as AppAdminDrivesIndexRouteImport } from './routes/_app.admin.drives.index'
+import { Route as AppAdminDrivesDriveIdRouteImport } from './routes/_app.admin.drives.$driveId'
+import { Route as AppAdminDrivesNewRouteImport } from './routes/_app.admin.drives.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminAnnouncementsRoute = AppAdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminApplicationsRoute = AppAdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminCompaniesRoute = AppAdminCompaniesRouteImport.update({
+  id: '/companies',
+  path: '/companies',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminStudentsRoute = AppAdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppApplicationsIndexRoute = AppApplicationsIndexRouteImport.update({
+  id: '/applications/',
+  path: '/applications/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApplicationsApplicationIdRoute =
+  AppApplicationsApplicationIdRouteImport.update({
+    id: '/applications/$applicationId',
+    path: '/applications/$applicationId',
+    getParentRoute: () => AppRoute,
+  } as any)
+const AppDrivesIndexRoute = AppDrivesIndexRouteImport.update({
+  id: '/drives/',
+  path: '/drives/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDrivesDriveIdRoute = AppDrivesDriveIdRouteImport.update({
+  id: '/drives/$driveId',
+  path: '/drives/$driveId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAdminDrivesIndexRoute = AppAdminDrivesIndexRouteImport.update({
+  id: '/drives/',
+  path: '/drives/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminDrivesDriveIdRoute = AppAdminDrivesDriveIdRouteImport.update({
+  id: '/drives/$driveId',
+  path: '/drives/$driveId',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminDrivesNewRoute = AppAdminDrivesNewRouteImport.update({
+  id: '/drives/new',
+  path: '/drives/new',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AppAdminRouteWithChildren
+  '/announcements': typeof AppAnnouncementsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/profile': typeof AppProfileRoute
+  '/settings': typeof AppSettingsRoute
+  '/admin/announcements': typeof AppAdminAnnouncementsRoute
+  '/admin/applications': typeof AppAdminApplicationsRoute
+  '/admin/companies': typeof AppAdminCompaniesRoute
+  '/admin/settings': typeof AppAdminSettingsRoute
+  '/admin/students': typeof AppAdminStudentsRoute
+  '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
+  '/drives/$driveId': typeof AppDrivesDriveIdRoute
+  '/admin/': typeof AppAdminIndexRoute
+  '/applications/': typeof AppApplicationsIndexRoute
+  '/drives/': typeof AppDrivesIndexRoute
+  '/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
+  '/admin/drives/new': typeof AppAdminDrivesNewRoute
+  '/admin/drives/': typeof AppAdminDrivesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/announcements': typeof AppAnnouncementsRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/profile': typeof AppProfileRoute
+  '/settings': typeof AppSettingsRoute
+  '/admin/announcements': typeof AppAdminAnnouncementsRoute
+  '/admin/applications': typeof AppAdminApplicationsRoute
+  '/admin/companies': typeof AppAdminCompaniesRoute
+  '/admin/settings': typeof AppAdminSettingsRoute
+  '/admin/students': typeof AppAdminStudentsRoute
+  '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
+  '/drives/$driveId': typeof AppDrivesDriveIdRoute
+  '/admin': typeof AppAdminIndexRoute
+  '/applications': typeof AppApplicationsIndexRoute
+  '/drives': typeof AppDrivesIndexRoute
+  '/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
+  '/admin/drives/new': typeof AppAdminDrivesNewRoute
+  '/admin/drives': typeof AppAdminDrivesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/admin': typeof AppAdminRouteWithChildren
+  '/_app/announcements': typeof AppAnnouncementsRoute
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/settings': typeof AppSettingsRoute
+  '/_app/admin/announcements': typeof AppAdminAnnouncementsRoute
+  '/_app/admin/applications': typeof AppAdminApplicationsRoute
+  '/_app/admin/companies': typeof AppAdminCompaniesRoute
+  '/_app/admin/settings': typeof AppAdminSettingsRoute
+  '/_app/admin/students': typeof AppAdminStudentsRoute
+  '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
+  '/_app/drives/$driveId': typeof AppDrivesDriveIdRoute
+  '/_app/admin/': typeof AppAdminIndexRoute
+  '/_app/applications/': typeof AppApplicationsIndexRoute
+  '/_app/drives/': typeof AppDrivesIndexRoute
+  '/_app/admin/drives/$driveId': typeof AppAdminDrivesDriveIdRoute
+  '/_app/admin/drives/new': typeof AppAdminDrivesNewRoute
+  '/_app/admin/drives/': typeof AppAdminDrivesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/announcements'
+    | '/dashboard'
+    | '/profile'
+    | '/settings'
+    | '/admin/announcements'
+    | '/admin/applications'
+    | '/admin/companies'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/applications/$applicationId'
+    | '/drives/$driveId'
+    | '/admin/'
+    | '/applications/'
+    | '/drives/'
+    | '/admin/drives/$driveId'
+    | '/admin/drives/new'
+    | '/admin/drives/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/announcements'
+    | '/dashboard'
+    | '/profile'
+    | '/settings'
+    | '/admin/announcements'
+    | '/admin/applications'
+    | '/admin/companies'
+    | '/admin/settings'
+    | '/admin/students'
+    | '/applications/$applicationId'
+    | '/drives/$driveId'
+    | '/admin'
+    | '/applications'
+    | '/drives'
+    | '/admin/drives/$driveId'
+    | '/admin/drives/new'
+    | '/admin/drives'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/admin'
+    | '/_app/announcements'
+    | '/_app/dashboard'
+    | '/_app/profile'
+    | '/_app/settings'
+    | '/_app/admin/announcements'
+    | '/_app/admin/applications'
+    | '/_app/admin/companies'
+    | '/_app/admin/settings'
+    | '/_app/admin/students'
+    | '/_app/applications/$applicationId'
+    | '/_app/drives/$driveId'
+    | '/_app/admin/'
+    | '/_app/applications/'
+    | '/_app/drives/'
+    | '/_app/admin/drives/$driveId'
+    | '/_app/admin/drives/new'
+    | '/_app/admin/drives/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +275,199 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/announcements': {
+      id: '/_app/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AppAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/': {
+      id: '/_app/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AppAdminIndexRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/announcements': {
+      id: '/_app/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AppAdminAnnouncementsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/applications': {
+      id: '/_app/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AppAdminApplicationsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/companies': {
+      id: '/_app/admin/companies'
+      path: '/companies'
+      fullPath: '/admin/companies'
+      preLoaderRoute: typeof AppAdminCompaniesRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/settings': {
+      id: '/_app/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AppAdminSettingsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/students': {
+      id: '/_app/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AppAdminStudentsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/applications/': {
+      id: '/_app/applications/'
+      path: '/applications'
+      fullPath: '/applications/'
+      preLoaderRoute: typeof AppApplicationsIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/applications/$applicationId': {
+      id: '/_app/applications/$applicationId'
+      path: '/applications/$applicationId'
+      fullPath: '/applications/$applicationId'
+      preLoaderRoute: typeof AppApplicationsApplicationIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/drives/': {
+      id: '/_app/drives/'
+      path: '/drives'
+      fullPath: '/drives/'
+      preLoaderRoute: typeof AppDrivesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/drives/$driveId': {
+      id: '/_app/drives/$driveId'
+      path: '/drives/$driveId'
+      fullPath: '/drives/$driveId'
+      preLoaderRoute: typeof AppDrivesDriveIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/admin/drives/': {
+      id: '/_app/admin/drives/'
+      path: '/drives'
+      fullPath: '/admin/drives/'
+      preLoaderRoute: typeof AppAdminDrivesIndexRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/drives/$driveId': {
+      id: '/_app/admin/drives/$driveId'
+      path: '/drives/$driveId'
+      fullPath: '/admin/drives/$driveId'
+      preLoaderRoute: typeof AppAdminDrivesDriveIdRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
+    '/_app/admin/drives/new': {
+      id: '/_app/admin/drives/new'
+      path: '/drives/new'
+      fullPath: '/admin/drives/new'
+      preLoaderRoute: typeof AppAdminDrivesNewRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
   }
 }
 
+interface AppAdminRouteChildren {
+  AppAdminAnnouncementsRoute: typeof AppAdminAnnouncementsRoute
+  AppAdminApplicationsRoute: typeof AppAdminApplicationsRoute
+  AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
+  AppAdminSettingsRoute: typeof AppAdminSettingsRoute
+  AppAdminStudentsRoute: typeof AppAdminStudentsRoute
+  AppAdminIndexRoute: typeof AppAdminIndexRoute
+  AppAdminDrivesDriveIdRoute: typeof AppAdminDrivesDriveIdRoute
+  AppAdminDrivesNewRoute: typeof AppAdminDrivesNewRoute
+  AppAdminDrivesIndexRoute: typeof AppAdminDrivesIndexRoute
+}
+
+const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminAnnouncementsRoute: AppAdminAnnouncementsRoute,
+  AppAdminApplicationsRoute: AppAdminApplicationsRoute,
+  AppAdminCompaniesRoute: AppAdminCompaniesRoute,
+  AppAdminSettingsRoute: AppAdminSettingsRoute,
+  AppAdminStudentsRoute: AppAdminStudentsRoute,
+  AppAdminIndexRoute: AppAdminIndexRoute,
+  AppAdminDrivesDriveIdRoute: AppAdminDrivesDriveIdRoute,
+  AppAdminDrivesNewRoute: AppAdminDrivesNewRoute,
+  AppAdminDrivesIndexRoute: AppAdminDrivesIndexRoute,
+}
+
+const AppAdminRouteWithChildren = AppAdminRoute._addFileChildren(
+  AppAdminRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRouteWithChildren
+  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppApplicationsApplicationIdRoute: typeof AppApplicationsApplicationIdRoute
+  AppDrivesDriveIdRoute: typeof AppDrivesDriveIdRoute
+  AppApplicationsIndexRoute: typeof AppApplicationsIndexRoute
+  AppDrivesIndexRoute: typeof AppDrivesIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRouteWithChildren,
+  AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppApplicationsApplicationIdRoute: AppApplicationsApplicationIdRoute,
+  AppDrivesDriveIdRoute: AppDrivesDriveIdRoute,
+  AppApplicationsIndexRoute: AppApplicationsIndexRoute,
+  AppDrivesIndexRoute: AppDrivesIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
