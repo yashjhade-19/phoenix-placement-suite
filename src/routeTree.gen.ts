@@ -17,6 +17,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
+import { Route as AppAdminAnnouncementsRouteImport } from './routes/_app.admin.announcements'
 import { Route as AppAdminApplicationsRouteImport } from './routes/_app.admin.applications'
 import { Route as AppAdminCompaniesRouteImport } from './routes/_app.admin.companies'
 import { Route as AppAdminStudentsRouteImport } from './routes/_app.admin.students'
@@ -65,6 +66,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminAnnouncementsRoute = AppAdminAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => AppAdminRoute,
 } as any)
 const AppAdminApplicationsRoute = AppAdminApplicationsRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
   '/admin/students': typeof AppAdminStudentsRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
   '/admin/students': typeof AppAdminStudentsRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/_app/admin/applications': typeof AppAdminApplicationsRoute
   '/_app/admin/companies': typeof AppAdminCompaniesRoute
   '/_app/admin/students': typeof AppAdminStudentsRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/announcements'
     | '/admin/applications'
     | '/admin/companies'
     | '/admin/students'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/announcements'
     | '/admin/applications'
     | '/admin/companies'
     | '/admin/students'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/profile'
     | '/_app/settings'
+    | '/_app/admin/announcements'
     | '/_app/admin/applications'
     | '/_app/admin/companies'
     | '/_app/admin/students'
@@ -300,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/_app/admin/announcements': {
+      id: '/_app/admin/announcements'
+      path: '/announcements'
+      fullPath: '/admin/announcements'
+      preLoaderRoute: typeof AppAdminAnnouncementsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/_app/admin/applications': {
       id: '/_app/admin/applications'
       path: '/applications'
@@ -374,6 +393,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAdminRouteChildren {
+  AppAdminAnnouncementsRoute: typeof AppAdminAnnouncementsRoute
   AppAdminApplicationsRoute: typeof AppAdminApplicationsRoute
   AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
   AppAdminStudentsRoute: typeof AppAdminStudentsRoute
@@ -384,6 +404,7 @@ interface AppAdminRouteChildren {
 }
 
 const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminAnnouncementsRoute: AppAdminAnnouncementsRoute,
   AppAdminApplicationsRoute: AppAdminApplicationsRoute,
   AppAdminCompaniesRoute: AppAdminCompaniesRoute,
   AppAdminStudentsRoute: AppAdminStudentsRoute,

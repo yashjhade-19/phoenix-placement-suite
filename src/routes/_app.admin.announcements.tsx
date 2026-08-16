@@ -19,13 +19,13 @@ export const Route = createFileRoute("/_app/admin/announcements")({
 
 const schema = z.object({
   title: z.string().trim().min(3, "Title is required").max(140),
-  body: z.string().trim().min(3, "Message is required").max(2000),
+  content: z.string().trim().min(3, "Message is required").max(2000),
 });
 
 function AdminAnnouncements() {
-  const { organization, profile } = useAuth();
+  const { organization } = useAuth();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ title: "", body: "" });
+  const [form, setForm] = useState({ title: "", content: "" });
 
   const query = useQuery({
     queryKey: ["announcements"],
@@ -47,14 +47,13 @@ function AdminAnnouncements() {
       const { error } = await supabase.from("announcements").insert({
         org_id: organization.id,
         title: parsed.data.title,
-        body: parsed.data.body,
-        created_by: profile?.id ?? null,
+        content: parsed.data.content,
       });
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       toast.success("Announcement published");
-      setForm({ title: "", body: "" });
+      setForm({ title: "", content: "" });
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
     },
     onError: (error: Error) => toast.error(error.message),
@@ -93,8 +92,8 @@ function AdminAnnouncements() {
             <Label>Message</Label>
             <Textarea
               rows={4}
-              value={form.body}
-              onChange={(e) => setForm((p) => ({ ...p, body: e.target.value }))}
+              value={form.content}
+              onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
             />
           </div>
           <Button onClick={() => publish.mutate()} disabled={publish.isPending}>
@@ -114,7 +113,7 @@ function AdminAnnouncements() {
               <CardContent className="flex items-start justify-between gap-4 p-5">
                 <div>
                   <div className="font-medium">{item.title}</div>
-                  <p className="mt-1 text-sm text-muted-foreground">{item.body}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{item.content}</p>
                   <p className="mt-2 text-xs text-muted-foreground">
                     {formatDate(item.created_at)}
                   </p>
