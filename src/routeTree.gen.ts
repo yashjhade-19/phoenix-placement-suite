@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppAnnouncementsRouteImport } from './routes/_app.announcements'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
 import { Route as AppApplicationsApplicationIdRouteImport } from './routes/_app.applications.$applicationId'
 import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
@@ -43,6 +44,11 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppApplicationsIndexRoute = AppApplicationsIndexRouteImport.update({
   id: '/applications/',
   path: '/applications/',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/announcements': typeof AppAnnouncementsRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/settings': typeof AppSettingsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/applications/': typeof AppApplicationsIndexRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/announcements': typeof AppAnnouncementsRoute
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
+  '/settings': typeof AppSettingsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/applications': typeof AppApplicationsIndexRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/_app/announcements': typeof AppAnnouncementsRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/_app/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/_app/applications/': typeof AppApplicationsIndexRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/dashboard'
     | '/profile'
+    | '/settings'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/applications/'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/announcements'
     | '/dashboard'
     | '/profile'
+    | '/settings'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/applications'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/_app/announcements'
     | '/_app/dashboard'
     | '/_app/profile'
+    | '/_app/settings'
     | '/_app/applications/$applicationId'
     | '/_app/drives/$driveId'
     | '/_app/applications/'
@@ -173,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/applications/': {
       id: '/_app/applications/'
       path: '/applications'
@@ -208,6 +227,7 @@ interface AppRouteChildren {
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppApplicationsApplicationIdRoute: typeof AppApplicationsApplicationIdRoute
   AppDrivesDriveIdRoute: typeof AppDrivesDriveIdRoute
   AppApplicationsIndexRoute: typeof AppApplicationsIndexRoute
@@ -218,6 +238,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppProfileRoute: AppProfileRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppApplicationsApplicationIdRoute: AppApplicationsApplicationIdRoute,
   AppDrivesDriveIdRoute: AppDrivesDriveIdRoute,
   AppApplicationsIndexRoute: AppApplicationsIndexRoute,
