@@ -17,6 +17,7 @@ import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
+import { Route as AppAdminApplicationsRouteImport } from './routes/_app.admin.applications'
 import { Route as AppAdminCompaniesRouteImport } from './routes/_app.admin.companies'
 import { Route as AppAdminStudentsRouteImport } from './routes/_app.admin.students'
 import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
@@ -64,6 +65,11 @@ const AppSettingsRoute = AppSettingsRouteImport.update({
 const AppAdminIndexRoute = AppAdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppAdminRoute,
+} as any)
+const AppAdminApplicationsRoute = AppAdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
   getParentRoute: () => AppAdminRoute,
 } as any)
 const AppAdminCompaniesRoute = AppAdminCompaniesRouteImport.update({
@@ -120,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
   '/admin/students': typeof AppAdminStudentsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AppDashboardRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
+  '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
   '/admin/students': typeof AppAdminStudentsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
+  '/_app/admin/applications': typeof AppAdminApplicationsRoute
   '/_app/admin/companies': typeof AppAdminCompaniesRoute
   '/_app/admin/students': typeof AppAdminStudentsRoute
   '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/applications'
     | '/admin/companies'
     | '/admin/students'
     | '/applications/$applicationId'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/profile'
     | '/settings'
+    | '/admin/applications'
     | '/admin/companies'
     | '/admin/students'
     | '/applications/$applicationId'
@@ -213,6 +224,7 @@ export interface FileRouteTypes {
     | '/_app/dashboard'
     | '/_app/profile'
     | '/_app/settings'
+    | '/_app/admin/applications'
     | '/_app/admin/companies'
     | '/_app/admin/students'
     | '/_app/applications/$applicationId'
@@ -288,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminIndexRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/_app/admin/applications': {
+      id: '/_app/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AppAdminApplicationsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/_app/admin/companies': {
       id: '/_app/admin/companies'
       path: '/companies'
@@ -355,6 +374,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppAdminRouteChildren {
+  AppAdminApplicationsRoute: typeof AppAdminApplicationsRoute
   AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
   AppAdminStudentsRoute: typeof AppAdminStudentsRoute
   AppAdminIndexRoute: typeof AppAdminIndexRoute
@@ -364,6 +384,7 @@ interface AppAdminRouteChildren {
 }
 
 const AppAdminRouteChildren: AppAdminRouteChildren = {
+  AppAdminApplicationsRoute: AppAdminApplicationsRoute,
   AppAdminCompaniesRoute: AppAdminCompaniesRoute,
   AppAdminStudentsRoute: AppAdminStudentsRoute,
   AppAdminIndexRoute: AppAdminIndexRoute,
