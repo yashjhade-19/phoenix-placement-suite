@@ -31,11 +31,11 @@ function AdminSettings() {
             <div className="space-y-2">
               <Label>Admin invite code</Label>
               <div className="flex gap-2">
-                <Input readOnly value={organization?.invite_code ?? ""} />
+                <Input readOnly value={organization?.admin_code ?? ""} />
                 <Button
                   variant="outline"
                   onClick={() => {
-                    navigator.clipboard.writeText(organization?.invite_code ?? "");
+                    navigator.clipboard.writeText(organization?.admin_code ?? "");
                     toast.success("Invite code copied");
                   }}
                 >
