@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
 import { Route as AppApplicationsApplicationIdRouteImport } from './routes/_app.applications.$applicationId'
 import { Route as AppDrivesIndexRouteImport } from './routes/_app.drives.index'
@@ -29,6 +30,11 @@ const AppRoute = AppRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
 const AppApplicationsIndexRoute = AppApplicationsIndexRouteImport.update({
@@ -56,6 +62,7 @@ const AppDrivesDriveIdRoute = AppDrivesDriveIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/profile': typeof AppProfileRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/applications/': typeof AppApplicationsIndexRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/profile': typeof AppProfileRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/applications': typeof AppApplicationsIndexRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/profile': typeof AppProfileRoute
   '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
   '/_app/drives/$driveId': typeof AppDrivesDriveIdRoute
   '/_app/applications/': typeof AppApplicationsIndexRoute
@@ -84,6 +93,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/profile'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/applications/'
@@ -92,6 +102,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/profile'
     | '/applications/$applicationId'
     | '/drives/$driveId'
     | '/applications'
@@ -101,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/_app/dashboard'
+    | '/_app/profile'
     | '/_app/applications/$applicationId'
     | '/_app/drives/$driveId'
     | '/_app/applications/'
@@ -133,6 +145,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/applications/': {
@@ -168,6 +187,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
+  AppProfileRoute: typeof AppProfileRoute
   AppApplicationsApplicationIdRoute: typeof AppApplicationsApplicationIdRoute
   AppDrivesDriveIdRoute: typeof AppDrivesDriveIdRoute
   AppApplicationsIndexRoute: typeof AppApplicationsIndexRoute
@@ -176,6 +196,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
+  AppProfileRoute: AppProfileRoute,
   AppApplicationsApplicationIdRoute: AppApplicationsApplicationIdRoute,
   AppDrivesDriveIdRoute: AppDrivesDriveIdRoute,
   AppApplicationsIndexRoute: AppApplicationsIndexRoute,
