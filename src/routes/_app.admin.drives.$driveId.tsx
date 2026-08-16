@@ -78,7 +78,7 @@ function AdminDriveDetail() {
   });
 
   const updateDrive = useMutation({
-    mutationFn: async (status: string) => {
+    mutationFn: async (status: DriveStatus) => {
       const { error } = await supabase.from("drives").update({ status }).eq("id", driveId);
       if (error) throw new Error(error.message);
     },
@@ -91,7 +91,7 @@ function AdminDriveDetail() {
   });
 
   const updateApp = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: AppStatus }) => {
       const { error } = await supabase.from("applications").update({ status }).eq("id", id);
       if (error) throw new Error(error.message);
     },
@@ -118,7 +118,7 @@ function AdminDriveDetail() {
         title={drive.title}
         description={`${drive.company?.name ?? ""} • ${formatCurrency(drive.ctc)} • Deadline ${formatDate(drive.deadline)}`}
         actions={
-          <Select value={drive.status} onValueChange={(status) => updateDrive.mutate(status)}>
+          <Select value={drive.status} onValueChange={(status) => updateDrive.mutate(status as DriveStatus)}>
             <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
@@ -171,10 +171,10 @@ function AdminDriveDetail() {
               ? "No rounds configured."
               : (drive.recruitment_stages ?? [])
                   .slice()
-                  .sort((a: { stage_order: number }, b: { stage_order: number }) => a.stage_order - b.stage_order)
-                  .map((stage: { id: string; name: string; stage_order: number }) => (
+                  .sort((a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order)
+                  .map((stage: { id: string; name: string; sort_order: number }) => (
                     <div key={stage.id}>
-                      {stage.stage_order}. {stage.name}
+                      {stage.sort_order}. {stage.name}
                     </div>
                   ))}
           </CardContent>
@@ -217,7 +217,7 @@ function AdminDriveDetail() {
                   <TableCell>
                     <Select
                       value={application.status}
-                      onValueChange={(status) => updateApp.mutate({ id: application.id, status })}
+                      onValueChange={(status) => updateApp.mutate({ id: application.id, status: status as AppStatus })}
                     >
                       <SelectTrigger>
                         <SelectValue />
