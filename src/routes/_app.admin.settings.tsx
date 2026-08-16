@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_app/admin/settings")({
 });
 
 function AdminSettings() {
-  const { organization, account, signOut } = useAuth();
+  const { organization, email } = useAuth();
 
   return (
     <>
@@ -56,11 +56,11 @@ function AdminSettings() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label>Email</Label>
-              <Input readOnly value={account?.email ?? ""} />
+              <Input readOnly value={email ?? ""} />
             </div>
-            <Button variant="outline" onClick={() => void signOut()}>
-              Sign out
-            </Button>
+            <p className="text-xs text-muted-foreground">
+              Use the account menu in the sidebar to sign out.
+            </p>
           </CardContent>
         </Card>
       </div>
