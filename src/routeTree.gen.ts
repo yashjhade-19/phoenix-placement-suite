@@ -20,6 +20,7 @@ import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
 import { Route as AppAdminAnnouncementsRouteImport } from './routes/_app.admin.announcements'
 import { Route as AppAdminApplicationsRouteImport } from './routes/_app.admin.applications'
 import { Route as AppAdminCompaniesRouteImport } from './routes/_app.admin.companies'
+import { Route as AppAdminReportsRouteImport } from './routes/_app.admin.reports'
 import { Route as AppAdminSettingsRouteImport } from './routes/_app.admin.settings'
 import { Route as AppAdminStudentsRouteImport } from './routes/_app.admin.students'
 import { Route as AppApplicationsIndexRouteImport } from './routes/_app.applications.index'
@@ -84,6 +85,11 @@ const AppAdminCompaniesRoute = AppAdminCompaniesRouteImport.update({
   path: '/companies',
   getParentRoute: () => AppAdminRoute,
 } as any)
+const AppAdminReportsRoute = AppAdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppAdminRoute,
+} as any)
 const AppAdminSettingsRoute = AppAdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
+  '/admin/reports': typeof AppAdminReportsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/students': typeof AppAdminStudentsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/admin/applications': typeof AppAdminApplicationsRoute
   '/admin/companies': typeof AppAdminCompaniesRoute
+  '/admin/reports': typeof AppAdminReportsRoute
   '/admin/settings': typeof AppAdminSettingsRoute
   '/admin/students': typeof AppAdminStudentsRoute
   '/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/_app/admin/announcements': typeof AppAdminAnnouncementsRoute
   '/_app/admin/applications': typeof AppAdminApplicationsRoute
   '/_app/admin/companies': typeof AppAdminCompaniesRoute
+  '/_app/admin/reports': typeof AppAdminReportsRoute
   '/_app/admin/settings': typeof AppAdminSettingsRoute
   '/_app/admin/students': typeof AppAdminStudentsRoute
   '/_app/applications/$applicationId': typeof AppApplicationsApplicationIdRoute
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/applications'
     | '/admin/companies'
+    | '/admin/reports'
     | '/admin/settings'
     | '/admin/students'
     | '/applications/$applicationId'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/announcements'
     | '/admin/applications'
     | '/admin/companies'
+    | '/admin/reports'
     | '/admin/settings'
     | '/admin/students'
     | '/applications/$applicationId'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/_app/admin/announcements'
     | '/_app/admin/applications'
     | '/_app/admin/companies'
+    | '/_app/admin/reports'
     | '/_app/admin/settings'
     | '/_app/admin/students'
     | '/_app/applications/$applicationId'
@@ -345,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAdminCompaniesRouteImport
       parentRoute: typeof AppAdminRoute
     }
+    '/_app/admin/reports': {
+      id: '/_app/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AppAdminReportsRouteImport
+      parentRoute: typeof AppAdminRoute
+    }
     '/_app/admin/settings': {
       id: '/_app/admin/settings'
       path: '/settings'
@@ -415,6 +434,7 @@ interface AppAdminRouteChildren {
   AppAdminAnnouncementsRoute: typeof AppAdminAnnouncementsRoute
   AppAdminApplicationsRoute: typeof AppAdminApplicationsRoute
   AppAdminCompaniesRoute: typeof AppAdminCompaniesRoute
+  AppAdminReportsRoute: typeof AppAdminReportsRoute
   AppAdminSettingsRoute: typeof AppAdminSettingsRoute
   AppAdminStudentsRoute: typeof AppAdminStudentsRoute
   AppAdminIndexRoute: typeof AppAdminIndexRoute
@@ -427,6 +447,7 @@ const AppAdminRouteChildren: AppAdminRouteChildren = {
   AppAdminAnnouncementsRoute: AppAdminAnnouncementsRoute,
   AppAdminApplicationsRoute: AppAdminApplicationsRoute,
   AppAdminCompaniesRoute: AppAdminCompaniesRoute,
+  AppAdminReportsRoute: AppAdminReportsRoute,
   AppAdminSettingsRoute: AppAdminSettingsRoute,
   AppAdminStudentsRoute: AppAdminStudentsRoute,
   AppAdminIndexRoute: AppAdminIndexRoute,
