@@ -74,6 +74,54 @@ export type Database = {
           },
         ]
       }
+      application_responses: {
+        Row: {
+          application_id: string
+          created_at: string
+          field_id: string
+          field_type: string
+          id: string
+          label: string
+          updated_at: string
+          value: Json | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          field_id: string
+          field_type: string
+          id?: string
+          label: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          field_id?: string
+          field_type?: string
+          id?: string
+          label?: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_responses_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_responses_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "form_fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           admin_notes: string | null
@@ -303,6 +351,7 @@ export type Database = {
       }
       form_fields: {
         Row: {
+          created_at: string
           drive_id: string
           field_type: string
           help_text: string | null
@@ -310,10 +359,14 @@ export type Database = {
           label: string
           options: string[]
           placeholder: string | null
+          profile_field: string | null
           required: boolean
           sort_order: number
+          updated_at: string
+          validation: Json
         }
         Insert: {
+          created_at?: string
           drive_id: string
           field_type: string
           help_text?: string | null
@@ -321,10 +374,14 @@ export type Database = {
           label: string
           options?: string[]
           placeholder?: string | null
+          profile_field?: string | null
           required?: boolean
           sort_order?: number
+          updated_at?: string
+          validation?: Json
         }
         Update: {
+          created_at?: string
           drive_id?: string
           field_type?: string
           help_text?: string | null
@@ -332,8 +389,11 @@ export type Database = {
           label?: string
           options?: string[]
           placeholder?: string | null
+          profile_field?: string | null
           required?: boolean
           sort_order?: number
+          updated_at?: string
+          validation?: Json
         }
         Relationships: [
           {
