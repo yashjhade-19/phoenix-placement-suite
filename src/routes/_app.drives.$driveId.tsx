@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -33,6 +33,7 @@ import {
   formatDateTime,
   isDeadlinePassed,
 } from "@/lib/domain";
+import { buildInitialResponses, readValidation } from "@/lib/form-builder";
 
 export const Route = createFileRoute("/_app/drives/$driveId")({
   component: DriveDetail,
@@ -74,6 +75,40 @@ function DriveDetail() {
   const eligibility = useMemo(() => evaluateEligibility(student, rules), [student, rules]);
   const batchOk = isBatchEligible(student, drive?.eligible_batches ?? []);
 
+  // Prefill fields that are linked to the student's platform profile.
+  useEffect(() => {
+    if (fields.length === 0) return;
+    const prefilled = buildInitialResponses(fields, student);
+    if (Object.keys(prefilled).length === 0) return;
+    setResponses((prev) => ({ ...prefilled, ...prev }));
+  }, [fields, student]);
+
+  async function uploadAttachment(file: File, field: (typeof fields)[number]) {
+    if (!student) return null;
+    const rules = readValidation(field);
+    const maxMb = rules.maxSizeMb ?? 5;
+    if (file.size > maxMb * 1024 * 1024) {
+      toast.error(`File must be under ${maxMb} MB`);
+      return null;
+    }
+    const accept = rules.accept ?? (field.field_type === "resume" ? ".pdf,.doc,.docx" : "");
+    if (accept) {
+      const allowed = accept.split(",").map((ext) => ext.trim().toLowerCase()).filter(Boolean);
+      const ok = allowed.some((ext) => file.name.toLowerCase().endsWith(ext));
+      if (!ok) {
+        toast.error(`Allowed file types: ${allowed.join(", ")}`);
+        return null;
+      }
+    }
+    const path = `${student.user_id}/drives/${driveId}/${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
+    const { error } = await supabase.storage.from("resumes").upload(path, file, { upsert: true });
+    if (error) {
+      toast.error(error.message);
+      return null;
+    }
+    return path;
+  }
+
   const applyMutation = useMutation({
     mutationFn: async () => {
       if (!student || !drive) throw new Error("Missing profile");
@@ -81,13 +116,31 @@ function DriveDetail() {
       for (const field of fields) {
         payload[field.label] = responses[field.id] ?? null;
       }
-      const { error } = await supabase.from("applications").insert({
-        org_id: drive.org_id,
-        drive_id: drive.id,
-        student_id: student.id,
-        responses: payload as never,
-      });
+      const { data, error } = await supabase
+        .from("applications")
+        .insert({
+          org_id: drive.org_id,
+          drive_id: drive.id,
+          student_id: student.id,
+          responses: payload as never,
+        })
+        .select("id")
+        .single();
       if (error) throw new Error(error.message);
+
+      if (fields.length > 0) {
+        const rows = fields.map((field) => ({
+          application_id: data.id,
+          field_id: field.id,
+          label: field.label,
+          field_type: field.field_type,
+          value: (responses[field.id] ?? null) as never,
+        }));
+        const { error: responseError } = await supabase
+          .from("application_responses")
+          .insert(rows);
+        if (responseError) throw new Error(responseError.message);
+      }
     },
     onSuccess: () => {
       toast.success("Application submitted");
@@ -230,6 +283,8 @@ function DriveDetail() {
                         key={field.id}
                         field={field}
                         value={responses[field.id]}
+                        fromProfile={!!field.profile_field}
+                        onUpload={(file) => uploadAttachment(file, field)}
                         {...(errors[field.id] ? { error: errors[field.id] } : {})}
                         onChange={(value) =>
                           setResponses((prev) => ({ ...prev, [field.id]: value }))

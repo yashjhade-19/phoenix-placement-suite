@@ -105,6 +105,38 @@ export async function getApplication(id: string) {
   );
 }
 
+export type ApplicationResponseRow = {
+  id: string;
+  application_id: string;
+  field_id: string;
+  label: string;
+  field_type: string;
+  value: unknown;
+  created_at: string;
+};
+
+export async function getApplicationResponses(applicationId: string) {
+  const { data, error } = await supabase
+    .from("application_responses")
+    .select("*, field:form_fields(sort_order, help_text, profile_field)")
+    .eq("application_id", applicationId);
+  if (error) throw new Error(error.message);
+  return (data ?? []).sort(
+    (a, b) => (a.field?.sort_order ?? 0) - (b.field?.sort_order ?? 0),
+  ) as (ApplicationResponseRow & {
+    field: { sort_order: number; help_text: string | null; profile_field: string | null } | null;
+  })[];
+}
+
+export async function signedFileUrl(path: string | null | undefined) {
+  if (!path) return null;
+  const { data, error } = await supabase.storage.from("resumes").createSignedUrl(path, 120);
+  if (error || !data) return null;
+  return data.signedUrl;
+}
+
+
+
 /* ---------- announcements ---------- */
 export async function listAnnouncements() {
   return unwrap<(Announcement & { drive: { title: string } | null })[]>(
