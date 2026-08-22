@@ -283,6 +283,8 @@ function DriveDetail() {
                         key={field.id}
                         field={field}
                         value={responses[field.id]}
+                        fromProfile={!!field.profile_field}
+                        onUpload={(file) => uploadAttachment(file, field)}
                         {...(errors[field.id] ? { error: errors[field.id] } : {})}
                         onChange={(value) =>
                           setResponses((prev) => ({ ...prev, [field.id]: value }))
