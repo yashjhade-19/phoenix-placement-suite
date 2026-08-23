@@ -163,6 +163,16 @@ function AdminApplications() {
                       </SelectContent>
                     </Select>
                   </TableCell>
+                  <TableCell>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link
+                        to="/admin/applications/$applicationId"
+                        params={{ applicationId: row.id }}
+                      >
+                        View
+                      </Link>
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
