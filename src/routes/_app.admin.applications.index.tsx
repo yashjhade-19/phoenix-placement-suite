@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,7 +25,7 @@ import {
 import { formatDate } from "@/lib/domain";
 import { useDebounce } from "@/hooks/use-debounce";
 
-export const Route = createFileRoute("/_app/admin/applications")({
+export const Route = createFileRoute("/_app/admin/applications/")({
   component: AdminApplications,
 });
 
@@ -125,6 +126,7 @@ function AdminApplications() {
                 <TableHead>Drive</TableHead>
                 <TableHead>Applied</TableHead>
                 <TableHead className="w-44">Status</TableHead>
+                <TableHead />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -161,6 +163,16 @@ function AdminApplications() {
                         ))}
                       </SelectContent>
                     </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link
+                        to="/admin/applications/$applicationId"
+                        params={{ applicationId: row.id }}
+                      >
+                        View
+                      </Link>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
