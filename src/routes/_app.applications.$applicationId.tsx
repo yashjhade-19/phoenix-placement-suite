@@ -26,6 +26,13 @@ export const Route = createFileRoute("/_app/applications/$applicationId")({
 
 const STAGE_ORDER = ["applied", "under_review", "shortlisted", "selected"];
 
+function renderValue(value: unknown) {
+  if (value === null || value === undefined || value === "") return "—";
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
+}
+
 function ApplicationDetail() {
   const { applicationId } = Route.useParams();
   const queryClient = useQueryClient();
@@ -35,6 +42,12 @@ function ApplicationDetail() {
     queryFn: () => getApplication(applicationId),
   });
   const application = appQuery.data;
+
+  const responsesQuery = useQuery({
+    queryKey: ["application-responses", applicationId],
+    queryFn: () => getApplicationResponses(applicationId),
+  });
+  const detailedResponses = responsesQuery.data ?? [];
 
   const stagesQuery = useQuery({
     queryKey: ["drive-stages", application?.drive_id],
