@@ -97,26 +97,41 @@ function ApplicationDetail() {
               <CardTitle className="text-base">Your responses</CardTitle>
             </CardHeader>
             <CardContent>
-              {Object.keys(responses).length === 0 ? (
+              {detailedResponses.length > 0 ? (
+                <dl className="grid gap-4 sm:grid-cols-2">
+                  {detailedResponses.map((row) => (
+                    <div key={row.id}>
+                      <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                        {row.label}
+                      </dt>
+                      <dd className="mt-1 whitespace-pre-line text-sm">
+                        {["file", "resume"].includes(row.field_type) && row.value ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              const url = await signedFileUrl(String(row.value));
+                              if (!url) toast.error("Could not open this file");
+                              else window.open(url, "_blank", "noopener");
+                            }}
+                          >
+                            Open uploaded file
+                          </Button>
+                        ) : (
+                          renderValue(row.value)
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : Object.keys(responses).length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   This drive did not require additional questions.
                 </p>
               ) : (
                 <dl className="grid gap-4 sm:grid-cols-2">
                   {Object.entries(responses).map(([label, value]) => (
-                    <Field
-                      key={label}
-                      label={label}
-                      value={
-                        Array.isArray(value)
-                          ? value.join(", ")
-                          : typeof value === "boolean"
-                            ? value
-                              ? "Yes"
-                              : "No"
-                            : String(value ?? "—")
-                      }
-                    />
+                    <Field key={label} label={label} value={renderValue(value)} />
                   ))}
                 </dl>
               )}
