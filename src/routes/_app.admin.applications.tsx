@@ -125,6 +125,7 @@ function AdminApplications() {
                 <TableHead>Drive</TableHead>
                 <TableHead>Applied</TableHead>
                 <TableHead className="w-44">Status</TableHead>
+                <TableHead />final
               </TableRow>
             </TableHeader>
             <TableBody>
