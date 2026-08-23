@@ -25,7 +25,7 @@ import {
 import { formatDate } from "@/lib/domain";
 import { useDebounce } from "@/hooks/use-debounce";
 
-export const Route = createFileRoute("/_app/admin/applications")({
+export const Route = createFileRoute("/_app/admin/applications/")({
   component: AdminApplications,
 });
 
