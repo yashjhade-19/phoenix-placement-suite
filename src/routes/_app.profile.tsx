@@ -363,50 +363,43 @@ function StudentProfile() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Skills & portfolio</CardTitle>
+            <CardTitle className="text-base">Skills</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Skills (comma separated)</Label>
-              <Input
-                value={form["skills"] ?? ""}
-                onChange={set("skills")}
-                placeholder="React, Python, SQL"
-              />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {(form["skills"] ?? "")
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-                  .map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      {skill}
-                    </Badge>
-                  ))}
-              </div>
-            </div>
-            <TextField label="LinkedIn URL" value={form["linkedin_url"]} onChange={set("linkedin_url")} />
-            <TextField label="GitHub URL" value={form["github_url"]} onChange={set("github_url")} />
-            <TextField
-              label="Portfolio URL"
-              value={form["portfolio_url"]}
-              onChange={set("portfolio_url")}
-            />
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Projects</Label>
-              <Textarea rows={4} value={form["projects"] ?? ""} onChange={set("projects")} />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Certifications</Label>
-              <Textarea
-                rows={3}
-                value={form["certifications"] ?? ""}
-                onChange={set("certifications")}
-              />
-            </div>
+          <CardContent>
+            <SkillsEditor skills={skills} onChange={setSkills} />
           </CardContent>
         </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base">Professional links</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-3">
+            <LinkField
+              label="LinkedIn"
+              placeholder="https://linkedin.com/in/you"
+              value={form["linkedin_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, linkedin_url: v }))}
+            />
+            <LinkField
+              label="GitHub"
+              placeholder="https://github.com/you"
+              value={form["github_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, github_url: v }))}
+            />
+            <LinkField
+              label="Portfolio"
+              placeholder="https://yoursite.com"
+              value={form["portfolio_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, portfolio_url: v }))}
+            />
+          </CardContent>
+        </Card>
+
+        <ProjectsSection studentId={student.id} />
+        <CertificationsSection studentId={student.id} />
       </div>
+
 
       <div className="mt-6 flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
