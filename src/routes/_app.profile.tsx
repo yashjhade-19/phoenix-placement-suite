@@ -22,6 +22,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BRANCHES, COURSES, profileCompletion } from "@/lib/domain";
+import {
+  CertificationsSection,
+  LinkField,
+  ProjectsSection,
+  SkillsEditor,
+  isValidUrl,
+} from "@/components/profile-sections";
 import type { Student } from "@/lib/types";
 
 export const Route = createFileRoute("/_app/profile")({
