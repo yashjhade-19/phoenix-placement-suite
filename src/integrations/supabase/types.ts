@@ -511,6 +511,94 @@ export type Database = {
           },
         ]
       }
+      student_certifications: {
+        Row: {
+          created_at: string
+          credential_url: string | null
+          id: string
+          issue_date: string | null
+          issuer: string | null
+          name: string
+          sort_order: number
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credential_url?: string | null
+          id?: string
+          issue_date?: string | null
+          issuer?: string | null
+          name: string
+          sort_order?: number
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credential_url?: string | null
+          id?: string
+          issue_date?: string | null
+          issuer?: string | null
+          name?: string
+          sort_order?: number
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_certifications_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          sort_order: number
+          student_id: string
+          technologies: string[]
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          student_id: string
+          technologies?: string[]
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          sort_order?: number
+          student_id?: string
+          technologies?: string[]
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_projects_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
           active_backlogs: number

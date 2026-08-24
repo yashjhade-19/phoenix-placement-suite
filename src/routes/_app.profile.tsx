@@ -10,7 +10,7 @@ import { EmptyState, PageHeader } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +22,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BRANCHES, COURSES, profileCompletion } from "@/lib/domain";
+import {
+  CertificationsSection,
+  LinkField,
+  ProjectsSection,
+  SkillsEditor,
+  isValidUrl,
+} from "@/components/profile-sections";
 import type { Student } from "@/lib/types";
 
 export const Route = createFileRoute("/_app/profile")({
@@ -87,10 +94,14 @@ function StudentProfile() {
   const { student, refresh } = useAuth();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState>({});
+  const [skills, setSkills] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (student) setForm(toForm(student));
+    if (student) {
+      setForm(toForm(student));
+      setSkills(student.skills ?? []);
+    }
   }, [student]);
 
   const save = useMutation({
@@ -113,16 +124,16 @@ function StudentProfile() {
         diploma_percentage: num(form["diploma_percentage"] ?? ""),
         active_backlogs: num(form["active_backlogs"] ?? "") ?? 0,
         total_backlogs: num(form["total_backlogs"] ?? "") ?? 0,
-        linkedin_url: form["linkedin_url"] || null,
-        github_url: form["github_url"] || null,
-        portfolio_url: form["portfolio_url"] || null,
-        projects: form["projects"] || null,
-        certifications: form["certifications"] || null,
-        skills: (form["skills"] ?? "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        linkedin_url: form["linkedin_url"]?.trim() || null,
+        github_url: form["github_url"]?.trim() || null,
+        portfolio_url: form["portfolio_url"]?.trim() || null,
+        skills,
       };
+
+      for (const key of ["linkedin_url", "github_url", "portfolio_url"] as const) {
+        if (!isValidUrl(form[key] ?? "")) throw new Error("Enter valid professional links");
+      }
+
 
       const parsed = schema.safeParse(payload);
       if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Invalid input");
@@ -363,50 +374,43 @@ function StudentProfile() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Skills & portfolio</CardTitle>
+            <CardTitle className="text-base">Skills</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Skills (comma separated)</Label>
-              <Input
-                value={form["skills"] ?? ""}
-                onChange={set("skills")}
-                placeholder="React, Python, SQL"
-              />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {(form["skills"] ?? "")
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-                  .map((skill) => (
-                    <Badge key={skill} variant="secondary">
-                      {skill}
-                    </Badge>
-                  ))}
-              </div>
-            </div>
-            <TextField label="LinkedIn URL" value={form["linkedin_url"]} onChange={set("linkedin_url")} />
-            <TextField label="GitHub URL" value={form["github_url"]} onChange={set("github_url")} />
-            <TextField
-              label="Portfolio URL"
-              value={form["portfolio_url"]}
-              onChange={set("portfolio_url")}
-            />
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Projects</Label>
-              <Textarea rows={4} value={form["projects"] ?? ""} onChange={set("projects")} />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label>Certifications</Label>
-              <Textarea
-                rows={3}
-                value={form["certifications"] ?? ""}
-                onChange={set("certifications")}
-              />
-            </div>
+          <CardContent>
+            <SkillsEditor skills={skills} onChange={setSkills} />
           </CardContent>
         </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base">Professional links</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 sm:grid-cols-3">
+            <LinkField
+              label="LinkedIn"
+              placeholder="https://linkedin.com/in/you"
+              value={form["linkedin_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, linkedin_url: v }))}
+            />
+            <LinkField
+              label="GitHub"
+              placeholder="https://github.com/you"
+              value={form["github_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, github_url: v }))}
+            />
+            <LinkField
+              label="Portfolio"
+              placeholder="https://yoursite.com"
+              value={form["portfolio_url"] ?? ""}
+              onChange={(v) => setForm((p) => ({ ...p, portfolio_url: v }))}
+            />
+          </CardContent>
+        </Card>
+
+        <ProjectsSection studentId={student.id} />
+        <CertificationsSection studentId={student.id} />
       </div>
+
 
       <div className="mt-6 flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
