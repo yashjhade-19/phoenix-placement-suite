@@ -124,16 +124,16 @@ function StudentProfile() {
         diploma_percentage: num(form["diploma_percentage"] ?? ""),
         active_backlogs: num(form["active_backlogs"] ?? "") ?? 0,
         total_backlogs: num(form["total_backlogs"] ?? "") ?? 0,
-        linkedin_url: form["linkedin_url"] || null,
-        github_url: form["github_url"] || null,
-        portfolio_url: form["portfolio_url"] || null,
-        projects: form["projects"] || null,
-        certifications: form["certifications"] || null,
-        skills: (form["skills"] ?? "")
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
+        linkedin_url: form["linkedin_url"]?.trim() || null,
+        github_url: form["github_url"]?.trim() || null,
+        portfolio_url: form["portfolio_url"]?.trim() || null,
+        skills,
       };
+
+      for (const key of ["linkedin_url", "github_url", "portfolio_url"] as const) {
+        if (!isValidUrl(form[key] ?? "")) throw new Error("Enter valid professional links");
+      }
+
 
       const parsed = schema.safeParse(payload);
       if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Invalid input");
