@@ -94,10 +94,14 @@ function StudentProfile() {
   const { student, refresh } = useAuth();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState>({});
+  const [skills, setSkills] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (student) setForm(toForm(student));
+    if (student) {
+      setForm(toForm(student));
+      setSkills(student.skills ?? []);
+    }
   }, [student]);
 
   const save = useMutation({
