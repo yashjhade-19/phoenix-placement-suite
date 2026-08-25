@@ -119,8 +119,8 @@ export function CompanyLogo({
   className,
 }: {
   name: string;
-  url?: string | null;
-  className?: string;
+  url?: string | null | undefined;
+  className?: string | undefined;
 }) {
   const [failed, setFailed] = useState(false);
   useEffect(() => setFailed(false), [url]);
