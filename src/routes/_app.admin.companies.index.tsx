@@ -1,16 +1,12 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { z } from "zod";
 import { listCompanies } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { EmptyState, LoadingBlock, PageHeader } from "@/components/common";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import {
   Dialog,
@@ -28,57 +24,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  CompanyFormFields,
+  CompanyLogo,
+  EMPTY_COMPANY,
+  companyPayload,
+  companyToForm,
+  validateCompany,
+  type CompanyFormValues,
+} from "@/components/company-form";
 import type { Company } from "@/lib/types";
 
-export const Route = createFileRoute("/_app/admin/companies")({
+export const Route = createFileRoute("/_app/admin/companies/")({
   component: AdminCompanies,
 });
-
-const schema = z.object({
-  name: z.string().trim().min(2, "Company name is required").max(120),
-  industry: z.string().trim().max(80).optional(),
-  location: z.string().trim().max(120).optional(),
-  website: z.string().trim().max(200).optional(),
-  contact_name: z.string().trim().max(120).optional(),
-  contact_email: z.string().trim().max(255).optional(),
-  contact_phone: z.string().trim().max(30).optional(),
-  description: z.string().trim().max(2000).optional(),
-});
-
-const EMPTY = {
-  name: "",
-  industry: "",
-  location: "",
-  website: "",
-  contact_name: "",
-  contact_email: "",
-  contact_phone: "",
-  description: "",
-};
 
 function AdminCompanies() {
   const { organization } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Company | null>(null);
-  const [form, setForm] = useState({ ...EMPTY });
+  const [form, setForm] = useState<CompanyFormValues>({ ...EMPTY_COMPANY });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const companiesQuery = useQuery({ queryKey: ["companies"], queryFn: listCompanies });
 
   const save = useMutation({
     mutationFn: async () => {
-      const parsed = schema.safeParse(form);
-      if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Invalid input");
-      const payload = {
-        name: form.name.trim(),
-        industry: form.industry || null,
-        location: form.location || null,
-        website: form.website || null,
-        contact_name: form.contact_name || null,
-        contact_email: form.contact_email || null,
-        contact_phone: form.contact_phone || null,
-        description: form.description || null,
-      };
+      const result = validateCompany(form);
+      setErrors(result.errors);
+      if (!result.ok) throw new Error("Please fix the highlighted fields");
+      const payload = companyPayload(form);
       if (editing) {
         const { error } = await supabase.from("companies").update(payload).eq("id", editing.id);
         if (error) throw new Error(error.message);
@@ -94,7 +70,8 @@ function AdminCompanies() {
       toast.success(editing ? "Company updated" : "Company added");
       setOpen(false);
       setEditing(null);
-      setForm({ ...EMPTY });
+      setForm({ ...EMPTY_COMPANY });
+      setErrors({});
       queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
     onError: (error: Error) => toast.error(error.message),
@@ -117,16 +94,8 @@ function AdminCompanies() {
 
   function startEdit(company: Company) {
     setEditing(company);
-    setForm({
-      name: company.name,
-      industry: company.industry ?? "",
-      location: company.location ?? "",
-      website: company.website ?? "",
-      contact_name: company.contact_name ?? "",
-      contact_email: company.contact_email ?? "",
-      contact_phone: company.contact_phone ?? "",
-      description: company.description ?? "",
-    });
+    setForm(companyToForm(company));
+    setErrors({});
     setOpen(true);
   }
 
@@ -142,48 +111,19 @@ function AdminCompanies() {
               setOpen(next);
               if (!next) {
                 setEditing(null);
-                setForm({ ...EMPTY });
+                setForm({ ...EMPTY_COMPANY });
+                setErrors({});
               }
             }}
           >
             <DialogTrigger asChild>
               <Button>Add company</Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editing ? "Edit company" : "Add company"}</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {(
-                  [
-                    ["name", "Company name"],
-                    ["industry", "Industry"],
-                    ["location", "Headquarters"],
-                    ["website", "Website"],
-                    ["contact_name", "Contact person"],
-                    ["contact_email", "Contact email"],
-                    ["contact_phone", "Contact phone"],
-                  ] as const
-                ).map(([key, label]) => (
-                  <div key={key} className="space-y-2">
-                    <Label htmlFor={key}>{label}</Label>
-                    <Input
-                      id={key}
-                      value={form[key]}
-                      onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
-                    />
-                  </div>
-                ))}
-                <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="description">About</Label>
-                  <Textarea
-                    id="description"
-                    rows={3}
-                    value={form.description}
-                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                  />
-                </div>
-              </div>
+              <CompanyFormFields form={form} setForm={setForm} errors={errors} />
               <DialogFooter>
                 <Button onClick={() => save.mutate()} disabled={save.isPending}>
                   {editing ? "Save changes" : "Add company"}
@@ -204,21 +144,46 @@ function AdminCompanies() {
                 <TableHead>Company</TableHead>
                 <TableHead>Industry</TableHead>
                 <TableHead>Location</TableHead>
-                <TableHead>Contact</TableHead>
+                <TableHead>Size</TableHead>
+                <TableHead>HR contact</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {companies.map((company) => (
                 <TableRow key={company.id}>
-                  <TableCell className="font-medium">{company.name}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <CompanyLogo
+                        name={company.name}
+                        url={company.logo_url}
+                        className="size-9"
+                      />
+                      <Link
+                        to="/admin/companies/$companyId"
+                        params={{ companyId: company.id }}
+                        className="font-medium hover:underline"
+                      >
+                        {company.name}
+                      </Link>
+                    </div>
+                  </TableCell>
                   <TableCell>{company.industry ?? "—"}</TableCell>
                   <TableCell>{company.location ?? "—"}</TableCell>
+                  <TableCell>{company.company_size ?? "—"}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {company.contact_name ?? "—"}
                     {company.contact_email ? ` • ${company.contact_email}` : ""}
                   </TableCell>
                   <TableCell className="space-x-1 text-right">
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link
+                        to="/admin/companies/$companyId"
+                        params={{ companyId: company.id }}
+                      >
+                        View
+                      </Link>
+                    </Button>
                     <Button variant="ghost" size="sm" onClick={() => startEdit(company)}>
                       Edit
                     </Button>
