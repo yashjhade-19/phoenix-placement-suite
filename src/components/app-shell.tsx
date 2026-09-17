@@ -11,8 +11,10 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  Moon,
   PieChart,
   Settings,
+  Sun,
   User,
   Users,
 } from "lucide-react";
@@ -28,8 +30,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Wordmark } from "@/components/brand";
 import { useAuth } from "@/lib/auth";
+import { useTheme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -100,6 +104,7 @@ export function AppShell({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
   const items = role === "admin" ? ADMIN_NAV : STUDENT_NAV;
 
   async function handleSignOut() {
@@ -198,6 +203,23 @@ export function AppShell({
                     </Link>
                   </DropdownMenuItem>
                 ) : null}
+                <DropdownMenuSeparator />
+                <div className="flex items-center gap-3 px-2 py-2 text-sm">
+                  {theme === "dark" ? (
+                    <Moon className="size-4 text-muted-foreground" />
+                  ) : (
+                    <Sun className="size-4 text-muted-foreground" />
+                  )}
+                  <label htmlFor="theme-toggle" className="flex-1 cursor-pointer">
+                    Dark mode
+                  </label>
+                  <Switch
+                    id="theme-toggle"
+                    checked={theme === "dark"}
+                    onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                    aria-label="Toggle dark mode"
+                  />
+                </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 size-4" /> Sign out
