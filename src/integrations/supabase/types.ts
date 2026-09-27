@@ -122,10 +122,53 @@ export type Database = {
           },
         ]
       }
+      application_round_results: {
+        Row: {
+          application_id: string
+          created_at: string
+          id: string
+          result: string
+          stage_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          id?: string
+          result?: string
+          stage_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          id?: string
+          result?: string
+          stage_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_round_results_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_round_results_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "recruitment_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       applications: {
         Row: {
           admin_notes: string | null
           created_at: string
+          current_stage_id: string | null
           drive_id: string
           id: string
           org_id: string
@@ -137,6 +180,7 @@ export type Database = {
         Insert: {
           admin_notes?: string | null
           created_at?: string
+          current_stage_id?: string | null
           drive_id: string
           id?: string
           org_id: string
@@ -148,6 +192,7 @@ export type Database = {
         Update: {
           admin_notes?: string | null
           created_at?: string
+          current_stage_id?: string | null
           drive_id?: string
           id?: string
           org_id?: string
@@ -157,6 +202,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "applications_current_stage_id_fkey"
+            columns: ["current_stage_id"]
+            isOneToOne: false
+            referencedRelation: "recruitment_stages"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "applications_drive_id_fkey"
             columns: ["drive_id"]
@@ -490,22 +542,40 @@ export type Database = {
       }
       recruitment_stages: {
         Row: {
+          description: string | null
           drive_id: string
           id: string
+          location: string | null
+          mode: string
           name: string
+          round_type: string
+          scheduled_at: string | null
           sort_order: number
+          status: string
         }
         Insert: {
+          description?: string | null
           drive_id: string
           id?: string
+          location?: string | null
+          mode?: string
           name: string
+          round_type?: string
+          scheduled_at?: string | null
           sort_order?: number
+          status?: string
         }
         Update: {
+          description?: string | null
           drive_id?: string
           id?: string
+          location?: string | null
+          mode?: string
           name?: string
+          round_type?: string
+          scheduled_at?: string | null
           sort_order?: number
+          status?: string
         }
         Relationships: [
           {
