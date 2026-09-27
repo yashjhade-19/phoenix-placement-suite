@@ -174,3 +174,23 @@ export function isBatchEligible(student: Student | null | undefined, batches: nu
   if (!student?.graduation_year) return false;
   return batches.includes(student.graduation_year);
 }
+
+/** Combined drive eligibility (batch + rules) with human-readable reasons. */
+export function driveEligibility(
+  student: Student | null | undefined,
+  rules: EligibilityRule[],
+  batches: number[],
+) {
+  const result = evaluateEligibility(student, rules);
+  const batchOk = isBatchEligible(student, batches);
+  const reasons: string[] = [];
+  if (!batchOk)
+    reasons.push(`Graduation year ${batches.join("/")} required (yours: ${student?.graduation_year ?? "Not provided"})`);
+  for (const group of result.groups) {
+    if (group.passed) continue;
+    reasons.push(
+      group.checks.map((c) => `${c.requirement} (yours: ${c.actual})`).join(" or "),
+    );
+  }
+  return { eligible: result.eligible && batchOk, reasons, result, batchOk };
+}
