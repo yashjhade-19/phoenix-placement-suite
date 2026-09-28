@@ -49,7 +49,7 @@ export type TrackerStep = {
   key: string;
   label: string;
   state: "done" | "current" | "failed" | "todo";
-  hint?: string;
+  hint?: string | undefined;
 };
 
 /** Builds a student-facing progress timeline for an application. */
