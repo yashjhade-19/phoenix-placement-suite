@@ -42,7 +42,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Draft = { id?: string; field: string; operator: string; value: string };
+type Draft = { id?: string | undefined; field: string; operator: string; value: string };
 
 function operatorsFor(field: string): { value: string; label: string }[] {
   const kind = RULE_FIELDS[field]?.kind;

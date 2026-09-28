@@ -33,7 +33,10 @@ import {
   formatDate,
   formatDateTime,
 } from "@/lib/domain";
-import { describeRule } from "@/lib/eligibility";
+import { EligibilityBuilder } from "@/components/eligibility-builder";
+import { RecruitmentManager } from "@/components/recruitment-manager";
+import type { Stage } from "@/lib/recruitment";
+import type { EligibilityRule } from "@/lib/types";
 
 export const Route = createFileRoute("/_app/admin/drives/$driveId")({
   component: AdminDriveDetail,
@@ -210,16 +213,11 @@ function AdminDriveDetail() {
         </TabsContent>
 
         <TabsContent value="eligibility">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Eligibility rules</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              {rules.length === 0
-                ? "No rules configured — open to all students in the eligible batches."
-                : rules.map((rule) => <div key={rule.id}>{describeRule(rule)}</div>)}
-            </CardContent>
-          </Card>
+          <EligibilityBuilder
+            driveId={driveId}
+            rules={rules as EligibilityRule[]}
+            batches={drive.eligible_batches}
+          />
         </TabsContent>
 
         <TabsContent value="form">
@@ -236,20 +234,11 @@ function AdminDriveDetail() {
         </TabsContent>
 
         <TabsContent value="rounds">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Recruitment rounds</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-muted-foreground">
-              {stages.length === 0
-                ? "No rounds configured."
-                : stages.map((stage: { id: string; name: string }, index: number) => (
-                    <div key={stage.id}>
-                      {index + 1}. {stage.name}
-                    </div>
-                  ))}
-            </CardContent>
-          </Card>
+          <RecruitmentManager
+            driveId={driveId}
+            stages={stages as Stage[]}
+            applications={applications as never}
+          />
         </TabsContent>
 
         <TabsContent value="preview" className="space-y-4">

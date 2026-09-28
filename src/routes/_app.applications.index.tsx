@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { ApplicationTracker } from "@/components/application-tracker";
+import { buildTracker, type RoundResultRow, type Stage } from "@/lib/recruitment";
 import { listApplications } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import {
@@ -40,6 +43,24 @@ function MyApplications() {
     queryKey: ["applications", "me", student?.id],
     queryFn: () => listApplications({ studentId: student?.id }),
     enabled: !!student?.id,
+  });
+
+  const driveIds = [...new Set((appsQuery.data ?? []).map((a) => a.drive_id))];
+  const trackQuery = useQuery({
+    queryKey: ["my-tracking", student?.id, driveIds.join(",")],
+    enabled: driveIds.length > 0,
+    queryFn: async () => {
+      const [st, rr] = await Promise.all([
+        supabase.from("recruitment_stages").select("*").in("drive_id", driveIds),
+        supabase
+          .from("application_round_results")
+          .select("id, application_id, stage_id, result")
+          .in("application_id", (appsQuery.data ?? []).map((a) => a.id)),
+      ]);
+      if (st.error) throw new Error(st.error.message);
+      if (rr.error) throw new Error(rr.error.message);
+      return { stages: (st.data ?? []) as Stage[], results: (rr.data ?? []) as RoundResultRow[] };
+    },
   });
 
   if (appsQuery.isLoading) return <LoadingBlock rows={5} />;
@@ -94,7 +115,8 @@ function MyApplications() {
             </TableHeader>
             <TableBody>
               {applications.map((application) => (
-                <TableRow key={application.id}>
+                <Fragment key={application.id}>
+                <TableRow className="border-b-0">
                   <TableCell className="font-medium">{application.drive?.title}</TableCell>
                   <TableCell>{application.drive?.company?.name}</TableCell>
                   <TableCell>{formatDate(application.created_at)}</TableCell>
@@ -112,6 +134,18 @@ function MyApplications() {
                     </Button>
                   </TableCell>
                 </TableRow>
+                <TableRow>
+                  <TableCell colSpan={5} className="pt-0">
+                    <ApplicationTracker
+                      steps={buildTracker(
+                        application,
+                        (trackQuery.data?.stages ?? []).filter((s) => s.drive_id === application.drive_id),
+                        (trackQuery.data?.results ?? []).filter((r) => r.application_id === application.id),
+                      )}
+                    />
+                  </TableCell>
+                </TableRow>
+                </Fragment>
               ))}
             </TableBody>
           </Table>

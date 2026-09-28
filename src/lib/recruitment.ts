@@ -49,7 +49,7 @@ export type TrackerStep = {
   key: string;
   label: string;
   state: "done" | "current" | "failed" | "todo";
-  hint?: string;
+  hint?: string | undefined;
 };
 
 /** Builds a student-facing progress timeline for an application. */
@@ -69,7 +69,7 @@ export function buildTracker(
     { key: "applied", label: "Applied", state: "done" },
     {
       key: "shortlisted",
-      label: "Shortlisted",
+      label: shortlisted || ended ? "Shortlisted" : app.status === "under_review" ? "Under review" : "Awaiting shortlist",
       state: shortlisted ? "done" : ended ? "failed" : "current",
     },
   ];
