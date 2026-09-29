@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatDateTime } from "@/lib/domain";
 import { cn } from "@/lib/utils";
+import { RoundScheduleCard, pickScheduledRound } from "@/components/round-schedule";
+import type { Stage } from "@/lib/recruitment";
 
 export const Route = createFileRoute("/_app/applications/$applicationId")({
   component: ApplicationDetail,
@@ -158,6 +160,10 @@ function ApplicationDetail() {
         </div>
 
         <div className="space-y-6">
+          {(() => {
+            const r = pickScheduledRound(application, (stagesQuery.data ?? []) as unknown as Stage[]);
+            return r ? <RoundScheduleCard stage={r} /> : null;
+          })()}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Progress</CardTitle>
@@ -202,8 +208,11 @@ function ApplicationDetail() {
             </CardHeader>
             <CardContent className="space-y-2">
               {(stagesQuery.data ?? []).map((stage, index) => (
-                <div key={stage.id} className="rounded-md border px-3 py-2 text-sm">
-                  {index + 1}. {stage.name}
+                <div key={stage.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                  <span className={cn(stage.id === application.current_stage_id && "font-medium text-primary")}>{index + 1}. {stage.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {stage.status === "completed" ? "Completed" : stage.scheduled_at ? formatDateTime(stage.scheduled_at) : ""}
+                  </span>
                 </div>
               ))}
               {(stagesQuery.data ?? []).length === 0 ? (

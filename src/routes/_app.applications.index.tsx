@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Fragment, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ApplicationTracker } from "@/components/application-tracker";
+import { RoundScheduleCard, pickScheduledRound } from "@/components/round-schedule";
 import { buildTracker, type RoundResultRow, type Stage } from "@/lib/recruitment";
 import { listApplications } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -143,6 +144,13 @@ function MyApplications() {
                         (trackQuery.data?.results ?? []).filter((r) => r.application_id === application.id),
                       )}
                     />
+                    {(() => {
+                      const r = pickScheduledRound(
+                        application,
+                        (trackQuery.data?.stages ?? []).filter((s) => s.drive_id === application.drive_id),
+                      );
+                      return r ? <div className="mt-3 max-w-2xl"><RoundScheduleCard stage={r} compact /></div> : null;
+                    })()}
                   </TableCell>
                 </TableRow>
                 </Fragment>
