@@ -35,7 +35,7 @@ export const ACADEMIC_KEYS = [
 ] as const;
 
 export const ACADEMIC_STATUSES = [
-  { value: "pending_verification", label: "Pending Verification", tone: "bg-warning/10 text-warning-foreground border-warning/40", dot: "bg-warning" },
+  { value: "pending_verification", label: "Pending Verification", tone: "bg-warning/15 text-foreground border-warning/50", dot: "bg-warning" },
   { value: "verified", label: "Verified", tone: "bg-success/10 text-success border-success/40", dot: "bg-success" },
   { value: "needs_correction", label: "Needs Correction", tone: "bg-destructive/10 text-destructive border-destructive/40", dot: "bg-destructive" },
 ] as const;
