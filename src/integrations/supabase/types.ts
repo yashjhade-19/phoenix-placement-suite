@@ -677,6 +677,10 @@ export type Database = {
       }
       students: {
         Row: {
+          academic_verification_notes: string | null
+          academic_verification_status: string
+          academic_verified_at: string | null
+          academic_verified_by: string | null
           active_backlogs: number
           batch: string | null
           branch: string | null
@@ -708,6 +712,10 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          academic_verification_notes?: string | null
+          academic_verification_status?: string
+          academic_verified_at?: string | null
+          academic_verified_by?: string | null
           active_backlogs?: number
           batch?: string | null
           branch?: string | null
@@ -739,6 +747,10 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          academic_verification_notes?: string | null
+          academic_verification_status?: string
+          academic_verified_at?: string | null
+          academic_verified_by?: string | null
           active_backlogs?: number
           batch?: string | null
           branch?: string | null
