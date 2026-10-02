@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Lock, Upload } from "lucide-react";
+import { ACADEMIC_KEYS, AcademicStatusBadge } from "@/components/academic-verification";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -138,7 +139,11 @@ function StudentProfile() {
       const parsed = schema.safeParse(payload);
       if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Invalid input");
 
-      const { error } = await supabase.from("students").update(payload).eq("id", student.id);
+      const update: Partial<typeof payload> = { ...payload };
+      if (student.academic_verification_status === "verified") {
+        for (const key of ACADEMIC_KEYS) delete update[key];
+      }
+      const { error } = await supabase.from("students").update(update).eq("id", student.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -198,6 +203,7 @@ function StudentProfile() {
   }
 
   const completion = profileCompletion(student);
+  const academicLocked = student.academic_verification_status === "verified";
 
   function set(key: string) {
     return (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -293,10 +299,23 @@ function StudentProfile() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
             <CardTitle className="text-base">Academic details</CardTitle>
+            <AcademicStatusBadge status={student.academic_verification_status} />
           </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-2">
+          <CardContent className="space-y-4">
+            {academicLocked ? (
+              <p className="flex items-start gap-2 rounded-md border border-success/30 bg-success/10 p-3 text-sm">
+                <Lock className="mt-0.5 size-4 shrink-0 text-success" />
+                Your academic information has been verified by the Placement Cell and cannot be edited.
+              </p>
+            ) : student.academic_verification_status === "needs_correction" ? (
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm">
+                The Placement Cell asked you to correct your academic details.
+                {student.academic_verification_notes ? ` Note: ${student.academic_verification_notes}` : ""}
+              </p>
+            ) : null}
+            <fieldset disabled={academicLocked} className="grid gap-4 disabled:opacity-80 sm:grid-cols-2">
             <TextField
               label="Enrollment number"
               value={form["enrollment_no"]}
@@ -369,6 +388,7 @@ function StudentProfile() {
               value={form["total_backlogs"]}
               onChange={set("total_backlogs")}
             />
+            </fieldset>
           </CardContent>
         </Card>
 
