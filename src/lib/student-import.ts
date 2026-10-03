@@ -38,9 +38,10 @@ export type ImportRecord = {
   total_backlogs: number;
 };
 
+export type ImportKey = (typeof IMPORT_COLUMNS)[number]["key"];
 export type ImportRow = {
   line: number;
-  raw: Record<string, string>;
+  raw: Record<ImportKey, string>;
   record: ImportRecord | null;
   errors: string[];
   duplicate: boolean; // conflicts with an existing student → skipped
@@ -119,7 +120,7 @@ export function validateImport(
 
   const rows = table.slice(1).map((cells, i): ImportRow => {
     const line = i + 2;
-    const raw: Record<string, string> = {};
+    const raw = {} as Record<ImportKey, string>;
     for (const col of IMPORT_COLUMNS) raw[col.key] = (cells[index[col.key] ?? -1] ?? "").trim();
     const errors: string[] = [];
     let duplicate = false;
