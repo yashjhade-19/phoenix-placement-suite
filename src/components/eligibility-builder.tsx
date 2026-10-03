@@ -280,7 +280,12 @@ export function EligibilityBuilder({
                   <div className="text-xs text-muted-foreground">{student.enrollment_no}</div>
                 </TableCell>
                 <TableCell>{student.branch ?? "—"}</TableCell>
-                <TableCell>{student.cgpa ?? "—"}</TableCell>
+                <TableCell>
+                  {student.cgpa ?? "—"}
+                  <div className="text-[11px] text-muted-foreground">
+                    {student.academic_verification_status === "verified" ? "Verified" : "Pending verification"}
+                  </div>
+                </TableCell>
                 <TableCell>
                   {eligible ? (
                     <span className="inline-flex items-center gap-1 text-sm text-success">

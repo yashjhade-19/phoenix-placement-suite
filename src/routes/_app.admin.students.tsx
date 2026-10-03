@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { Search, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  ACADEMIC_STATUSES,
+  AcademicStatusBadge,
+  StudentAcademicDialog,
+} from "@/components/academic-verification";
+import { StudentImportDialog } from "@/components/student-import-dialog";
 import { listApplications, listStudents } from "@/lib/api";
 import { EmptyState, LoadingBlock, PageHeader } from "@/components/common";
 import { Input } from "@/components/ui/input";
@@ -32,6 +39,9 @@ export const Route = createFileRoute("/_app/admin/students")({
 function AdminStudents() {
   const [search, setSearch] = useState("");
   const [branch, setBranch] = useState("all");
+  const [academic, setAcademic] = useState("all");
+  const [importOpen, setImportOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const debounced = useDebounce(search);
 
   const studentsQuery = useQuery({ queryKey: ["students"], queryFn: listStudents });
@@ -51,14 +61,23 @@ function AdminStudents() {
     )
       return false;
     if (branch !== "all" && student.branch !== branch) return false;
+    if (academic !== "all" && student.academic_verification_status !== academic) return false;
     return true;
   });
+  const all = studentsQuery.data ?? [];
+  const selected = all.find((s) => s.id === selectedId) ?? null;
+  const pendingCount = all.filter((s) => s.academic_verification_status !== "verified").length;
 
   return (
     <>
       <PageHeader
         title="Students"
-        description={`${(studentsQuery.data ?? []).length} students registered • ${placedIds.size} placed`}
+        description={`${all.length} students registered • ${placedIds.size} placed • ${pendingCount} awaiting verification`}
+        actions={
+          <Button onClick={() => setImportOpen(true)}>
+            <Upload className="mr-2 size-4" /> Import Students
+          </Button>
+        }
       />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -84,7 +103,23 @@ function AdminStudents() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={academic} onValueChange={setAcademic}>
+          <SelectTrigger className="sm:w-56" aria-label="Academic status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All academic statuses</SelectItem>
+            {ACADEMIC_STATUSES.map((s) => (
+              <SelectItem key={s.value} value={s.value}>
+                {s.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
+
+      <StudentImportDialog open={importOpen} onOpenChange={setImportOpen} existing={all} />
+      <StudentAcademicDialog student={selected} onOpenChange={(o) => !o && setSelectedId(null)} />
 
       {students.length === 0 ? (
         <EmptyState title="No students match your filters" />
@@ -99,7 +134,9 @@ function AdminStudents() {
                 <TableHead>Batch</TableHead>
                 <TableHead>CGPA</TableHead>
                 <TableHead>Backlogs</TableHead>
+                <TableHead>Academic status</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -115,6 +152,9 @@ function AdminStudents() {
                   <TableCell>{student.cgpa ?? "—"}</TableCell>
                   <TableCell>{student.active_backlogs}</TableCell>
                   <TableCell>
+                    <AcademicStatusBadge status={student.academic_verification_status} />
+                  </TableCell>
+                  <TableCell>
                     {placedIds.has(student.id) ? (
                       <Badge variant="outline" className="bg-success/10 text-success">
                         Placed
@@ -122,6 +162,11 @@ function AdminStudents() {
                     ) : (
                       <Badge variant="secondary">Available</Badge>
                     )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedId(student.id)}>
+                      Review
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

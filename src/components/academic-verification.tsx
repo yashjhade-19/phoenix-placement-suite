@@ -20,6 +20,7 @@ import { Field } from "@/components/common";
 import { formatDateTime } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 import type { Student } from "@/lib/types";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export const ACADEMIC_KEYS = [
   "enrollment_no",
@@ -134,7 +135,7 @@ export function StudentAcademicDialog({
           }
         }
       }
-      const { error } = await supabase.from("students").update(update).eq("id", student.id);
+      const { error } = await supabase.from("students").update(update as TablesUpdate<"students">).eq("id", student.id);
       if (error) throw new Error(error.message);
       return kind;
     },
