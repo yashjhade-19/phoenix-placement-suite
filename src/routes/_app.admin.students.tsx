@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Upload } from "lucide-react";
+import { Download, Search, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ACADEMIC_STATUSES,
@@ -29,6 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { downloadCsv } from "@/lib/export";
+import { toast } from "sonner";
 import { BRANCHES } from "@/lib/domain";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -68,15 +70,34 @@ function AdminStudents() {
   const selected = all.find((s) => s.id === selectedId) ?? null;
   const pendingCount = all.filter((s) => s.academic_verification_status !== "verified").length;
 
+  const exportStudents = () => {
+    if (students.length === 0) {
+      toast.info("No students match your filters to export");
+      return;
+    }
+    const label = ACADEMIC_STATUSES.reduce<Record<string, string>>((m, s) => ({ ...m, [s.value]: s.label }), {});
+    downloadCsv(
+      "HirePhoenix_Students.csv",
+      ["Name", "Enrollment Number", "Email", "Phone", "Branch", "Graduation Year", "CGPA", "10th %", "12th %", "Backlogs", "Academic Verification Status", "Placement Status"],
+      students.map((s) => [s.full_name, s.enrollment_no, s.email, s.phone, s.branch, s.graduation_year, s.cgpa, s.tenth_percentage, s.twelfth_percentage, s.active_backlogs, label[s.academic_verification_status] ?? s.academic_verification_status, placedIds.has(s.id) ? "Placed" : "Available"]),
+    );
+    toast.success(`Exported ${students.length} student${students.length === 1 ? "" : "s"}`);
+  };
+
   return (
     <>
       <PageHeader
         title="Students"
         description={`${all.length} students registered • ${placedIds.size} placed • ${pendingCount} awaiting verification`}
         actions={
-          <Button onClick={() => setImportOpen(true)}>
-            <Upload className="mr-2 size-4" /> Import Students
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={exportStudents}>
+              <Download className="mr-2 size-4" /> Export Students
+            </Button>
+            <Button onClick={() => setImportOpen(true)}>
+              <Upload className="mr-2 size-4" /> Import Students
+            </Button>
+          </div>
         }
       />
 
