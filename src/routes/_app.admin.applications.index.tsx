@@ -297,6 +297,7 @@ function AdminApplications() {
             <Button size="sm" variant="outline" onClick={exportCsv}>
               <Download className="mr-1 size-4" /> Export selected
             </Button>
+            <DossierButton ids={selectedIds} title="Recruiter" />
             <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
               Clear
             </Button>

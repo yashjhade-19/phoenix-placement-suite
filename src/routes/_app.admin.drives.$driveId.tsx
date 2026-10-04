@@ -1,3 +1,4 @@
+import { DossierButton } from "@/components/dossier-button";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -268,6 +269,15 @@ function AdminDriveDetail() {
         </TabsContent>
 
         <TabsContent value="applicants">
+          {applications.some((a) => a.status === "shortlisted" || a.status === "selected") ? (
+            <div className="mb-3 flex justify-end">
+              <DossierButton
+                label="Download shortlisted dossier"
+                title={`${drive.company?.name ?? ""} ${drive.title}`}
+                ids={applications.filter((a) => a.status === "shortlisted" || a.status === "selected").map((a) => a.id)}
+              />
+            </div>
+          ) : null}
           <Card className="overflow-hidden">
             {applications.length === 0 ? (
               <CardContent className="pt-6">
