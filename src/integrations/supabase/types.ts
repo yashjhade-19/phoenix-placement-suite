@@ -306,6 +306,7 @@ export type Database = {
           location: string | null
           opens_at: string | null
           org_id: string
+          placement_tier: string
           ppt_at: string | null
           status: Database["public"]["Enums"]["drive_status"]
           stipend: number | null
@@ -327,6 +328,7 @@ export type Database = {
           location?: string | null
           opens_at?: string | null
           org_id: string
+          placement_tier?: string
           ppt_at?: string | null
           status?: Database["public"]["Enums"]["drive_status"]
           stipend?: number | null
@@ -348,6 +350,7 @@ export type Database = {
           location?: string | null
           opens_at?: string | null
           org_id?: string
+          placement_tier?: string
           ppt_at?: string | null
           status?: Database["public"]["Enums"]["drive_status"]
           stipend?: number | null
@@ -463,6 +466,102 @@ export type Database = {
           },
         ]
       }
+      offers: {
+        Row: {
+          application_id: string
+          company_id: string
+          created_at: string
+          ctc: number | null
+          document_path: string | null
+          drive_id: string
+          expiry_date: string | null
+          id: string
+          joining_date: string | null
+          notes: string | null
+          org_id: string
+          release_date: string | null
+          responded_at: string | null
+          role: string
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          company_id: string
+          created_at?: string
+          ctc?: number | null
+          document_path?: string | null
+          drive_id: string
+          expiry_date?: string | null
+          id?: string
+          joining_date?: string | null
+          notes?: string | null
+          org_id: string
+          release_date?: string | null
+          responded_at?: string | null
+          role: string
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          company_id?: string
+          created_at?: string
+          ctc?: number | null
+          document_path?: string | null
+          drive_id?: string
+          expiry_date?: string | null
+          id?: string
+          joining_date?: string | null
+          notes?: string | null
+          org_id?: string
+          release_date?: string | null
+          responded_at?: string | null
+          role?: string
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: true
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_drive_id_fkey"
+            columns: ["drive_id"]
+            isOneToOne: false
+            referencedRelation: "drives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offers_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           academic_year: string | null
@@ -504,6 +603,47 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      placement_policies: {
+        Row: {
+          allow_after_placed: boolean
+          allow_after_selection: boolean
+          allow_upgrades: boolean
+          allow_with_pending_offer: boolean
+          org_id: string
+          updated_at: string
+          upgrade_min_ctc: number | null
+          use_tiers: boolean
+        }
+        Insert: {
+          allow_after_placed?: boolean
+          allow_after_selection?: boolean
+          allow_upgrades?: boolean
+          allow_with_pending_offer?: boolean
+          org_id: string
+          updated_at?: string
+          upgrade_min_ctc?: number | null
+          use_tiers?: boolean
+        }
+        Update: {
+          allow_after_placed?: boolean
+          allow_after_selection?: boolean
+          allow_upgrades?: boolean
+          allow_with_pending_offer?: boolean
+          org_id?: string
+          updated_at?: string
+          upgrade_min_ctc?: number | null
+          use_tiers?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placement_policies_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -814,6 +954,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      application_block_reason: {
+        Args: { _drive: string; _student: string }
+        Returns: string
+      }
       claim_admin: { Args: { _code: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -824,6 +968,10 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       my_org: { Args: never; Returns: string }
+      respond_offer: {
+        Args: { _accept: boolean; _offer: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "student"
