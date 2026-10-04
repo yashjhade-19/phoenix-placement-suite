@@ -7,7 +7,10 @@ import { downloadDossier } from "@/lib/export";
 export function DossierButton({ ids, title, label = "Download dossier" }: { ids: string[]; title: string; label?: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const run = async () => {
-    if (!ids.length) return toast.info("No candidates to include");
+    if (!ids.length) {
+      toast.info("No candidates to include");
+      return;
+    }
     setBusy("Preparing…");
     try {
       const r = await downloadDossier(ids, title, (d, t) => setBusy(`Packaging ${d}/${t}…`));

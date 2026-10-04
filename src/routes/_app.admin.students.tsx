@@ -71,7 +71,10 @@ function AdminStudents() {
   const pendingCount = all.filter((s) => s.academic_verification_status !== "verified").length;
 
   const exportStudents = () => {
-    if (students.length === 0) return toast.info("No students match your filters to export");
+    if (students.length === 0) {
+      toast.info("No students match your filters to export");
+      return;
+    }
     const label = ACADEMIC_STATUSES.reduce<Record<string, string>>((m, s) => ({ ...m, [s.value]: s.label }), {});
     downloadCsv(
       "HirePhoenix_Students.csv",
