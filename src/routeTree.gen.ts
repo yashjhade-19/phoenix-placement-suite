@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppAdminRouteImport } from './routes/_app.admin'
 import { Route as AppAnnouncementsRouteImport } from './routes/_app.announcements'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppOffersRouteImport } from './routes/_app.offers'
 import { Route as AppProfileRouteImport } from './routes/_app.profile'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppAdminIndexRouteImport } from './routes/_app.admin.index'
@@ -55,6 +56,11 @@ const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOffersRoute = AppOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -157,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AppAdminRouteWithChildren
   '/announcements': typeof AppAnnouncementsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/offers': typeof AppOffersRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
   '/admin/announcements': typeof AppAdminAnnouncementsRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/announcements': typeof AppAnnouncementsRoute
   '/dashboard': typeof AppDashboardRoute
+  '/offers': typeof AppOffersRoute
   '/profile': typeof AppProfileRoute
   '/settings': typeof AppSettingsRoute
   '/admin/announcements': typeof AppAdminAnnouncementsRoute
@@ -206,6 +214,7 @@ export interface FileRoutesById {
   '/_app/admin': typeof AppAdminRouteWithChildren
   '/_app/announcements': typeof AppAnnouncementsRoute
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/offers': typeof AppOffersRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/admin/announcements': typeof AppAdminAnnouncementsRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/announcements'
     | '/dashboard'
+    | '/offers'
     | '/profile'
     | '/settings'
     | '/admin/announcements'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/'
     | '/announcements'
     | '/dashboard'
+    | '/offers'
     | '/profile'
     | '/settings'
     | '/admin/announcements'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/_app/admin'
     | '/_app/announcements'
     | '/_app/dashboard'
+    | '/_app/offers'
     | '/_app/profile'
     | '/_app/settings'
     | '/_app/admin/announcements'
@@ -340,6 +352,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/offers': {
+      id: '/_app/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof AppOffersRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/profile': {
@@ -510,6 +529,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRouteWithChildren
   AppAnnouncementsRoute: typeof AppAnnouncementsRoute
   AppDashboardRoute: typeof AppDashboardRoute
+  AppOffersRoute: typeof AppOffersRoute
   AppProfileRoute: typeof AppProfileRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppApplicationsApplicationIdRoute: typeof AppApplicationsApplicationIdRoute
@@ -522,6 +542,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRouteWithChildren,
   AppAnnouncementsRoute: AppAnnouncementsRoute,
   AppDashboardRoute: AppDashboardRoute,
+  AppOffersRoute: AppOffersRoute,
   AppProfileRoute: AppProfileRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppApplicationsApplicationIdRoute: AppApplicationsApplicationIdRoute,

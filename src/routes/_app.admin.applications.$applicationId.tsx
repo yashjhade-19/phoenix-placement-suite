@@ -23,6 +23,7 @@ import {
 import { APPLICATION_STATUSES, APPLICATION_STATUS_LABELS, formatDateTime } from "@/lib/domain";
 import { profileFieldLabel } from "@/lib/form-builder";
 import type { ApplicationStatus } from "@/lib/types";
+import { OfferManager } from "@/components/offer-manager";
 
 export const Route = createFileRoute("/_app/admin/applications/$applicationId")({
   component: AdminApplicationDetail,
@@ -60,6 +61,7 @@ function AdminApplicationDetail() {
       toast.success("Application status updated");
       queryClient.invalidateQueries({ queryKey: ["application", applicationId] });
       queryClient.invalidateQueries({ queryKey: ["applications"] });
+      queryClient.invalidateQueries({ queryKey: ["offer", applicationId] });
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -214,6 +216,7 @@ function AdminApplicationDetail() {
         </div>
 
         <div className="space-y-6">
+          <OfferManager application={application as never} />
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Student profile</CardTitle>

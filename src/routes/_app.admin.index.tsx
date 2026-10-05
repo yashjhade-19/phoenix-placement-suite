@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Briefcase, Building2, FileText, GraduationCap } from "lucide-react";
+import { listOffers } from "@/lib/offers";
 import { listApplications, listCompanies, listDrives, listStudents } from "@/lib/api";
 import {
   ApplicationStatusBadge,
@@ -23,6 +24,7 @@ function AdminDashboard() {
   const companiesQuery = useQuery({ queryKey: ["companies"], queryFn: listCompanies });
   const drivesQuery = useQuery({ queryKey: ["drives"], queryFn: listDrives });
   const appsQuery = useQuery({ queryKey: ["applications"], queryFn: () => listApplications() });
+  const offersQuery = useQuery({ queryKey: ["offers"], queryFn: () => listOffers() });
 
   if (studentsQuery.isLoading || drivesQuery.isLoading || appsQuery.isLoading)
     return <LoadingBlock rows={6} />;
@@ -30,8 +32,9 @@ function AdminDashboard() {
   const students = studentsQuery.data ?? [];
   const drives = drivesQuery.data ?? [];
   const applications = appsQuery.data ?? [];
+  void applications;
   const placed = new Set(
-    applications.filter((a) => a.status === "selected").map((a) => a.student_id),
+    (offersQuery.data ?? []).filter((o) => o.status === "accepted").map((o) => o.student_id),
   );
   const placementRate = students.length
     ? Math.round((placed.size / students.length) * 100)

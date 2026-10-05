@@ -1,4 +1,7 @@
 import { DossierButton } from "@/components/dossier-button";
+import { DEFAULT_POLICY, getPolicy, listOffers, policyBlockForApplication } from "@/lib/offers";
+import { OfferStatusBadge } from "@/components/offer-manager";
+import { useAuth } from "@/lib/auth";
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -72,6 +75,7 @@ const initialFilters = {
   minCgpa: "",
   maxBacklogs: "",
   eligibility: "all",
+  placement: "all",
   skill: "",
   response: "",
 };
@@ -100,6 +104,14 @@ function AdminApplications() {
     },
   });
 
+  const { organization } = useAuth();
+  const offersQuery = useQuery({ queryKey: ["offers"], queryFn: () => listOffers() });
+  const policyQuery = useQuery({
+    queryKey: ["placement-policy", organization?.id],
+    queryFn: () => getPolicy(organization!.id),
+    enabled: !!organization?.id,
+  });
+
   const rulesQuery = useQuery({
     queryKey: ["admin-all-rules"],
     queryFn: async () => {
@@ -126,12 +138,19 @@ function AdminApplications() {
 
   const enriched = useMemo(() => {
     const rules = rulesQuery.data ?? [];
+    const offers = offersQuery.data ?? [];
+    const policy = policyQuery.data ?? DEFAULT_POLICY;
+    const selectedBy = new Map<string, string[]>();
+    (query.data ?? []).forEach((a) => a.status === "selected" && selectedBy.set(a.student_id, [...(selectedBy.get(a.student_id) ?? []), a.drive_id]));
     return (query.data ?? []).map((row) => {
       const driveRules = rules.filter((r) => r.drive_id === row.drive_id);
       const ev = driveEligibility(row.student as Student, driveRules, row.drive?.eligible_batches ?? []);
-      return { ...row, eligible: ev.eligible, reasons: ev.reasons };
+      const block = policyBlockForApplication(row, offers, selectedBy, policy);
+      const offer = offers.find((o) => o.application_id === row.id) ?? null;
+      const placedAt = offers.find((o) => o.student_id === row.student_id && o.status === "accepted") ?? null;
+      return { ...row, eligible: ev.eligible && !block, reasons: block ? [block, ...ev.reasons] : ev.reasons, policyBlock: block, offer, placedAt };
     });
-  }, [query.data, rulesQuery.data]);
+  }, [query.data, rulesQuery.data, offersQuery.data, policyQuery.data]);
 
   const drives = useMemo(() => {
     const m = new Map<string, string>();
@@ -162,6 +181,9 @@ function AdminApplications() {
     if (f.maxBacklogs !== "" && (s?.active_backlogs ?? 0) > Number(f.maxBacklogs)) return false;
     if (f.eligibility === "eligible" && !row.eligible) return false;
     if (f.eligibility === "ineligible" && row.eligible) return false;
+    if (f.placement === "placed" && !row.placedAt) return false;
+    if (f.placement === "unplaced" && row.placedAt) return false;
+    if (["released", "accepted", "declined"].includes(f.placement) && row.offer?.status !== f.placement) return false;
     const sk = skillTerm.trim().toLowerCase();
     if (sk && !(s?.skills ?? []).some((x) => x.toLowerCase().includes(sk))) return false;
     const rt = responseTerm.trim().toLowerCase();
@@ -231,6 +253,7 @@ function AdminApplications() {
             <FilterSelect label="Company" value={f.company} onChange={(v) => setF({ ...f, company: v })} options={companies} />
             <FilterSelect label="Status" value={f.status} onChange={(v) => setF({ ...f, status: v })} options={APP_STATUSES.map((s) => [s, APPLICATION_STATUS_LABELS[s]])} />
             <FilterSelect label="Eligibility" value={f.eligibility} onChange={(v) => setF({ ...f, eligibility: v })} options={[["eligible", "Eligible"], ["ineligible", "Not eligible"]]} />
+            <FilterSelect label="Placement / offer" value={f.placement} onChange={(v) => setF({ ...f, placement: v })} options={[["placed", "Placed"], ["unplaced", "Unplaced"], ["released", "Offer pending"], ["accepted", "Offer accepted"], ["declined", "Offer declined"]]} />
             <FilterSelect label="Graduation year" value={f.year} onChange={(v) => setF({ ...f, year: v })} options={years.map((y) => [String(y), String(y)])} />
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Minimum CGPA</Label>
@@ -289,7 +312,12 @@ function AdminApplications() {
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md border bg-accent/50 p-3 text-sm">
           <span className="font-medium">{selected.size} selected</span>
           <div className="ml-auto flex flex-wrap gap-2">
-            <Button size="sm" disabled={bulk.isPending} onClick={() => bulk.mutate({ ids: selectedIds, next: "shortlisted" })}>
+            <Button size="sm" disabled={bulk.isPending} onClick={() => {
+                const blocked = enriched.filter((r) => selected.has(r.id) && r.policyBlock).map((r) => r.id);
+                const ids = selectedIds.filter((id) => !blocked.includes(id));
+                if (blocked.length) toast.warning(`${blocked.length} skipped — restricted by placement policy`);
+                if (ids.length) bulk.mutate({ ids, next: "shortlisted" });
+              }}>
               Shortlist selected
             </Button>
             <Button size="sm" variant="outline" className="text-destructive" disabled={bulk.isPending} onClick={() => setConfirmReject(true)}>
@@ -358,9 +386,14 @@ function AdminApplications() {
                       <Badge variant="outline" className="border-success/25 bg-success/10 text-success">Eligible</Badge>
                     ) : (
                       <Badge variant="outline" title={row.reasons.join("\n")} className="border-destructive/20 bg-destructive/10 text-destructive">
-                        Not eligible
+                        {row.policyBlock ? "Policy restricted" : "Not eligible"}
                       </Badge>
                     )}
+                    {row.offer && row.offer.status !== "draft" ? (
+                      <div className="mt-1"><OfferStatusBadge status={row.offer.status} /></div>
+                    ) : row.placedAt && row.placedAt.application_id !== row.id ? (
+                      <div className="mt-1 text-xs text-muted-foreground">Placed · {row.placedAt.company?.name}</div>
+                    ) : null}
                   </TableCell>
                   <TableCell>{formatDate(row.created_at)}</TableCell>
                   <TableCell>

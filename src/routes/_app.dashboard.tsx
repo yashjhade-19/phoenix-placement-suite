@@ -1,3 +1,4 @@
+import { listOffers } from "@/lib/offers";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Briefcase, CalendarClock, FileText, Trophy } from "lucide-react";
@@ -58,7 +59,14 @@ function StudentDashboard() {
     );
   });
 
-  const selectedCount = applications.filter((a) => a.status === "selected").length;
+  const offersQ = useQuery({
+    queryKey: ["offers", "me", student?.id],
+    queryFn: () => listOffers({ studentId: student!.id }),
+    enabled: !!student?.id,
+  });
+  const myOffers = offersQ.data ?? [];
+  const placedOffer = myOffers.find((o) => o.status === "accepted");
+  const pendingOffers = myOffers.filter((o) => o.status === "released").length;
   const completion = profileCompletion(student);
 
   if (drivesQuery.isLoading || appsQuery.isLoading) {
@@ -92,8 +100,8 @@ function StudentDashboard() {
         />
         <StatCard
           label="Offers"
-          value={selectedCount}
-          hint="Selected results"
+          value={myOffers.length}
+          hint={placedOffer ? `Placed · ${placedOffer.company?.name}` : pendingOffers ? `${pendingOffers} awaiting your response` : "Unplaced"}
           icon={<Trophy className="size-4" />}
         />
         <StatCard
