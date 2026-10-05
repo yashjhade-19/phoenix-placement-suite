@@ -6,6 +6,7 @@ import {
   Building2,
   Briefcase,
   FileText,
+  Gift,
   GraduationCap,
   LayoutDashboard,
   LogOut,
@@ -59,6 +60,7 @@ const STUDENT_NAV: NavItem[] = [
   { label: "My Profile", to: "/profile", icon: User },
   { label: "Placement Drives", to: "/drives", icon: Briefcase },
   { label: "My Applications", to: "/applications", icon: FileText },
+  { label: "My Offers", to: "/offers", icon: Gift },
   { label: "Announcements", to: "/announcements", icon: Megaphone },
   { label: "Settings", to: "/settings", icon: Settings },
 ];

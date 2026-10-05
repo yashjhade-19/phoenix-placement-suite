@@ -12,6 +12,7 @@ import {
 } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { getBlockReason } from "@/lib/offers";
 import { evaluateEligibility, isBatchEligible } from "@/lib/eligibility";
 import {
   ApplicationStatusBadge,
@@ -109,6 +110,13 @@ function DriveDetail() {
     return path;
   }
 
+  const policyQuery = useQuery({
+    queryKey: ["policy-block", student?.id, driveId],
+    queryFn: () => getBlockReason(student!.id, driveId),
+    enabled: !!student?.id,
+  });
+  const policyBlock = policyQuery.data ?? null;
+
   const applyMutation = useMutation({
     mutationFn: async () => {
       if (!student || !drive) throw new Error("Missing profile");
@@ -171,7 +179,7 @@ function DriveDetail() {
     return <ErrorBlock message="This drive could not be loaded." />;
 
   const closed = drive.status !== "applications_open" || isDeadlinePassed(drive.deadline);
-  const canApply = !closed && eligibility.eligible && batchOk && !existing;
+  const canApply = !closed && eligibility.eligible && batchOk && !existing && !policyBlock;
 
   function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -352,6 +360,11 @@ function DriveDetail() {
                 <p className="text-sm text-muted-foreground">
                   Applications are currently closed for this drive.
                 </p>
+              ) : policyBlock ? (
+                <div className="rounded-md border border-warning/30 bg-warning/10 p-3 text-sm">
+                  <p className="font-medium">Not allowed by placement policy</p>
+                  <p className="mt-1 text-muted-foreground">{policyBlock}</p>
+                </div>
               ) : (
                 <Button className="w-full" disabled={!canApply} onClick={() => setShowForm(true)}>
                   {canApply ? "Apply now" : "Not eligible to apply"}

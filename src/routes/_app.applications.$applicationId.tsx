@@ -21,6 +21,8 @@ import { formatCurrency, formatDateTime } from "@/lib/domain";
 import { cn } from "@/lib/utils";
 import { RoundScheduleCard, pickScheduledRound } from "@/components/round-schedule";
 import type { Stage } from "@/lib/recruitment";
+import { listOffers } from "@/lib/offers";
+import { StudentOfferCard } from "@/components/student-offer-card";
 
 export const Route = createFileRoute("/_app/applications/$applicationId")({
   component: ApplicationDetail,
@@ -55,6 +57,11 @@ function ApplicationDetail() {
     queryKey: ["drive-stages", application?.drive_id],
     queryFn: () => getDriveStages(application!.drive_id),
     enabled: !!application?.drive_id,
+  });
+
+  const offerQuery = useQuery({
+    queryKey: ["offer", applicationId],
+    queryFn: async () => (await listOffers({ applicationId }))[0] ?? null,
   });
 
   const withdraw = useMutation({
@@ -111,6 +118,8 @@ function ApplicationDetail() {
               </dl>
             </CardContent>
           </Card>
+
+          {offerQuery.data ? <StudentOfferCard offer={offerQuery.data} /> : null}
 
           <Card>
             <CardHeader>

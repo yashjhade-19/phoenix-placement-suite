@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Award, Briefcase, IndianRupee, Users } from "lucide-react";
+import { listOffers } from "@/lib/offers";
 import { listApplications, listDrives, listStudents } from "@/lib/api";
 import { EmptyState, LoadingBlock, PageHeader, StatCard } from "@/components/common";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +16,7 @@ function AdminReports() {
   const studentsQuery = useQuery({ queryKey: ["students"], queryFn: listStudents });
   const drivesQuery = useQuery({ queryKey: ["drives"], queryFn: listDrives });
   const appsQuery = useQuery({ queryKey: ["applications"], queryFn: () => listApplications() });
+  const offersQuery = useQuery({ queryKey: ["offers"], queryFn: () => listOffers() });
 
   if (studentsQuery.isLoading || drivesQuery.isLoading || appsQuery.isLoading)
     return <LoadingBlock rows={6} />;
@@ -24,7 +26,9 @@ function AdminReports() {
   const applications = appsQuery.data ?? [];
 
   const selected = applications.filter((a) => a.status === "selected");
-  const placedIds = new Set(selected.map((a) => a.student_id));
+  const placedIds = new Set(
+    (offersQuery.data ?? []).filter((o) => o.status === "accepted").map((o) => o.student_id),
+  );
   const placementRate = students.length
     ? Math.round((placedIds.size / students.length) * 100)
     : 0;
