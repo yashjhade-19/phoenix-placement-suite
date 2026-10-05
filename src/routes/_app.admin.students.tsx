@@ -9,7 +9,7 @@ import {
   StudentAcademicDialog,
 } from "@/components/academic-verification";
 import { StudentImportDialog } from "@/components/student-import-dialog";
-import { listApplications, listStudents } from "@/lib/api";
+import { listStudents } from "@/lib/api";
 import { EmptyState, LoadingBlock, PageHeader } from "@/components/common";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/table";
 import { downloadCsv } from "@/lib/export";
 import { toast } from "sonner";
+import { listOffers, placementMap } from "@/lib/offers";
+import { OfferStatusBadge } from "@/components/offer-manager";
 import { BRANCHES } from "@/lib/domain";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -42,18 +44,21 @@ function AdminStudents() {
   const [search, setSearch] = useState("");
   const [branch, setBranch] = useState("all");
   const [academic, setAcademic] = useState("all");
+  const [placement, setPlacement] = useState("all");
   const [importOpen, setImportOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const debounced = useDebounce(search);
 
   const studentsQuery = useQuery({ queryKey: ["students"], queryFn: listStudents });
-  const appsQuery = useQuery({ queryKey: ["applications"], queryFn: () => listApplications() });
+  const offersQuery = useQuery({ queryKey: ["offers"], queryFn: () => listOffers() });
 
   if (studentsQuery.isLoading) return <LoadingBlock rows={6} />;
 
-  const placedIds = new Set(
-    (appsQuery.data ?? []).filter((a) => a.status === "selected").map((a) => a.student_id),
-  );
+  const offers = offersQuery.data ?? [];
+  const placedBy = placementMap(offers);
+  const placedIds = new Set(placedBy.keys());
+  const latestOffer = new Map<string, (typeof offers)[number]>();
+  offers.forEach((o) => o.status !== "draft" && !latestOffer.has(o.student_id) && latestOffer.set(o.student_id, o));
 
   const students = (studentsQuery.data ?? []).filter((student) => {
     const term = debounced.trim().toLowerCase();
@@ -64,6 +69,9 @@ function AdminStudents() {
       return false;
     if (branch !== "all" && student.branch !== branch) return false;
     if (academic !== "all" && student.academic_verification_status !== academic) return false;
+    if (placement === "placed" && !placedIds.has(student.id)) return false;
+    if (placement === "unplaced" && placedIds.has(student.id)) return false;
+    if (["released", "declined"].includes(placement) && !offers.some((o) => o.student_id === student.id && o.status === placement)) return false;
     return true;
   });
   const all = studentsQuery.data ?? [];
@@ -78,8 +86,8 @@ function AdminStudents() {
     const label = ACADEMIC_STATUSES.reduce<Record<string, string>>((m, s) => ({ ...m, [s.value]: s.label }), {});
     downloadCsv(
       "HirePhoenix_Students.csv",
-      ["Name", "Enrollment Number", "Email", "Phone", "Branch", "Graduation Year", "CGPA", "10th %", "12th %", "Backlogs", "Academic Verification Status", "Placement Status"],
-      students.map((s) => [s.full_name, s.enrollment_no, s.email, s.phone, s.branch, s.graduation_year, s.cgpa, s.tenth_percentage, s.twelfth_percentage, s.active_backlogs, label[s.academic_verification_status] ?? s.academic_verification_status, placedIds.has(s.id) ? "Placed" : "Available"]),
+      ["Name", "Enrollment Number", "Email", "Phone", "Branch", "Graduation Year", "CGPA", "10th %", "12th %", "Backlogs", "Academic Verification Status", "Placement Status", "Company", "Role"],
+      students.map((s) => [s.full_name, s.enrollment_no, s.email, s.phone, s.branch, s.graduation_year, s.cgpa, s.tenth_percentage, s.twelfth_percentage, s.active_backlogs, label[s.academic_verification_status] ?? s.academic_verification_status, placedIds.has(s.id) ? "Placed" : "Unplaced", placedBy.get(s.id)?.company?.name, placedBy.get(s.id)?.role]),
     );
     toast.success(`Exported ${students.length} student${students.length === 1 ? "" : "s"}`);
   };
@@ -137,6 +145,18 @@ function AdminStudents() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={placement} onValueChange={setPlacement}>
+          <SelectTrigger className="sm:w-48" aria-label="Placement status">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All placement statuses</SelectItem>
+            <SelectItem value="placed">Placed</SelectItem>
+            <SelectItem value="unplaced">Unplaced</SelectItem>
+            <SelectItem value="released">Offer pending</SelectItem>
+            <SelectItem value="declined">Offer declined</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <StudentImportDialog open={importOpen} onOpenChange={setImportOpen} existing={all} />
@@ -156,7 +176,7 @@ function AdminStudents() {
                 <TableHead>CGPA</TableHead>
                 <TableHead>Backlogs</TableHead>
                 <TableHead>Academic status</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Placement</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -176,12 +196,20 @@ function AdminStudents() {
                     <AcademicStatusBadge status={student.academic_verification_status} />
                   </TableCell>
                   <TableCell>
-                    {placedIds.has(student.id) ? (
-                      <Badge variant="outline" className="bg-success/10 text-success">
-                        Placed
-                      </Badge>
+                    {placedBy.get(student.id) ? (
+                      <div>
+                        <Badge variant="outline" className="bg-success/10 text-success">Placed</Badge>
+                        <div className="mt-1 text-xs text-muted-foreground">
+                          {placedBy.get(student.id)!.company?.name} · {placedBy.get(student.id)!.role}
+                        </div>
+                      </div>
                     ) : (
-                      <Badge variant="secondary">Available</Badge>
+                      <div>
+                        <Badge variant="secondary">Unplaced</Badge>
+                        {latestOffer.get(student.id) ? (
+                          <div className="mt-1"><OfferStatusBadge status={latestOffer.get(student.id)!.status} /></div>
+                        ) : null}
+                      </div>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
