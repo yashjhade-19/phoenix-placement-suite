@@ -29,12 +29,12 @@ function MyOffers() {
   });
   if (q.isLoading) return <LoadingBlock rows={3} />;
   const offers = q.data ?? [];
-  const placed = offers.find((o) => o.status === "accepted");
+  const placed = offers.find((o) => o.status === "placed");
   return (
     <>
       <PageHeader
         title="My offers"
-        description="Offers released to you by the placement cell."
+        description="Placement outcomes recorded by your placement cell. Offer letters and terms come directly from the company."
         actions={
           <Badge variant="outline" className={placed ? "bg-success/10 text-success" : ""}>
             Placement status: {placed ? `Placed · ${placed.company?.name}` : "Unplaced"}
@@ -42,7 +42,7 @@ function MyOffers() {
         }
       />
       {offers.length === 0 ? (
-        <EmptyState title="No offers yet" description="When you're selected and the placement cell releases an offer, it will appear here." />
+        <EmptyState title="No outcomes yet" description="When the placement cell records an offer or placement for you, it will appear here." />
       ) : (
         <div className="space-y-4">
           {offers.map((o) => (

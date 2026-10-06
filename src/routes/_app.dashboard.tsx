@@ -65,8 +65,8 @@ function StudentDashboard() {
     enabled: !!student?.id,
   });
   const myOffers = offersQ.data ?? [];
-  const placedOffer = myOffers.find((o) => o.status === "accepted");
-  const pendingOffers = myOffers.filter((o) => o.status === "released").length;
+  const placedOffer = myOffers.find((o) => o.status === "placed");
+  const pendingOffers = myOffers.filter((o) => o.status === "released" || o.status === "accepted").length;
   const completion = profileCompletion(student);
 
   if (drivesQuery.isLoading || appsQuery.isLoading) {

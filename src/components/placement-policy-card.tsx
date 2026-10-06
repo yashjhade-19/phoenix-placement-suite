@@ -11,8 +11,8 @@ import { DEFAULT_POLICY, getPolicy } from "@/lib/offers";
 
 const ROWS = [
   ["allow_after_selection", "Applications after selection", "Can a student who is selected in a drive keep applying to other drives?"],
-  ["allow_with_pending_offer", "Applications with a pending offer", "Can a student who has an offer awaiting response keep applying?"],
-  ["allow_after_placed", "Applications after an accepted offer", "Can a placed student (offer accepted) apply to further drives?"],
+  ["allow_with_pending_offer", "Applications with an offer", "Can a student who has received or accepted an offer (not yet placed) keep applying?"],
+  ["allow_after_placed", "Applications after placement", "Can a student marked Placed apply to further drives?"],
 ] as const;
 
 export function PlacementPolicyCard({ orgId }: { orgId: string }) {
