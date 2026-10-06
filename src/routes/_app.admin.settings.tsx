@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PlacementPolicyCard } from "@/components/placement-policy-card";
 
 export const Route = createFileRoute("/_app/admin/settings")({
   component: AdminSettings,
@@ -63,6 +64,7 @@ function AdminSettings() {
             </p>
           </CardContent>
         </Card>
+        {organization?.id ? <PlacementPolicyCard orgId={organization.id} /> : null}
       </div>
     </>
   );
