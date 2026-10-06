@@ -153,7 +153,7 @@ function AdminStudents() {
             <SelectItem value="all">All placement statuses</SelectItem>
             <SelectItem value="placed">Placed</SelectItem>
             <SelectItem value="unplaced">Unplaced</SelectItem>
-            <SelectItem value="released">Offer pending</SelectItem>
+            <SelectItem value="released">Offer received</SelectItem>
             <SelectItem value="declined">Offer declined</SelectItem>
           </SelectContent>
         </Select>

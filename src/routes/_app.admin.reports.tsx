@@ -27,7 +27,7 @@ function AdminReports() {
 
   const selected = applications.filter((a) => a.status === "selected");
   const placedIds = new Set(
-    (offersQuery.data ?? []).filter((o) => o.status === "accepted").map((o) => o.student_id),
+    (offersQuery.data ?? []).filter((o) => o.status === "placed").map((o) => o.student_id),
   );
   const placementRate = students.length
     ? Math.round((placedIds.size / students.length) * 100)
@@ -97,7 +97,7 @@ function AdminReports() {
         <StatCard
           label="Average CTC"
           value={avgCtc ? formatCurrency(avgCtc) : "—"}
-          hint="Across accepted offers"
+          hint="Students marked Placed"
           icon={<IndianRupee className="size-4" />}
         />
         <StatCard

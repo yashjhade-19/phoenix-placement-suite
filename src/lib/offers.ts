@@ -8,21 +8,34 @@ export type OfferWithRelations = Offer & {
   drive: { title: string } | null;
 };
 
+/** Placement outcomes recorded by the placement cell (from company/student communication). */
+export const OUTCOMES = [
+  ["released", "Offer Received"],
+  ["accepted", "Offer Accepted"],
+  ["declined", "Offer Declined"],
+  ["placed", "Placed"],
+] as const;
+
 export const OFFER_STATUS_LABELS: Record<string, string> = {
-  draft: "Draft",
-  released: "Pending response",
-  accepted: "Accepted",
-  declined: "Declined",
-  revoked: "Revoked",
+  draft: "Draft (legacy)",
+  released: "Offer Received",
+  accepted: "Offer Accepted",
+  declined: "Offer Declined",
+  placed: "Placed",
+  revoked: "Revoked (legacy)",
 };
 
 export const OFFER_STATUS_CLASS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
   released: "bg-warning/15 text-warning",
-  accepted: "bg-success/10 text-success",
+  accepted: "bg-primary/10 text-primary",
   declined: "bg-destructive/10 text-destructive",
+  placed: "bg-success/10 text-success",
   revoked: "bg-muted text-muted-foreground line-through",
 };
+
+/** Has an offer received/accepted but not yet placed. */
+export const HAS_OFFER = ["released", "accepted"];
 
 export const DEFAULT_POLICY = {
   allow_after_selection: true,
@@ -62,10 +75,10 @@ export async function getBlockReason(studentId: string, driveId: string) {
   return (data as string | null) ?? null;
 }
 
-/** Placement map: studentId -> accepted offer (Placed) */
+/** Placement map: studentId -> outcome recorded as Placed */
 export function placementMap(offers: OfferWithRelations[]) {
   const m = new Map<string, OfferWithRelations>();
-  offers.forEach((o) => o.status === "accepted" && m.set(o.student_id, o));
+  offers.forEach((o) => o.status === "placed" && m.set(o.student_id, o));
   return m;
 }
 
@@ -78,9 +91,9 @@ export function policyBlockForApplication(
 ) {
   if (app.status === "selected") return null;
   const mine = offers.filter((o) => o.student_id === app.student_id && o.drive_id !== app.drive_id);
-  const accepted = mine.find((o) => o.status === "accepted");
-  if (!p.allow_after_placed && accepted) return `Placed at ${accepted.company?.name ?? "another company"} — policy restricts further applications`;
-  if (!p.allow_with_pending_offer && mine.some((o) => o.status === "released")) return "Has a pending offer — policy restricts further applications";
+  const placed = mine.find((o) => o.status === "placed");
+  if (!p.allow_after_placed && placed) return `Placed at ${placed.company?.name ?? "another company"} — policy restricts further applications`;
+  if (!p.allow_with_pending_offer && mine.some((o) => HAS_OFFER.includes(o.status))) return "Has received an offer — policy restricts further applications";
   if (!p.allow_after_selection && (selectedByStudent.get(app.student_id) ?? []).some((d) => d !== app.drive_id))
     return "Selected in another drive — policy restricts further applications";
   return null;

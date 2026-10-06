@@ -34,7 +34,7 @@ function AdminDashboard() {
   const applications = appsQuery.data ?? [];
   void applications;
   const placed = new Set(
-    (offersQuery.data ?? []).filter((o) => o.status === "accepted").map((o) => o.student_id),
+    (offersQuery.data ?? []).filter((o) => o.status === "placed").map((o) => o.student_id),
   );
   const placementRate = students.length
     ? Math.round((placed.size / students.length) * 100)

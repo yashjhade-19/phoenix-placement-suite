@@ -147,7 +147,7 @@ function AdminApplications() {
       const ev = driveEligibility(row.student as Student, driveRules, row.drive?.eligible_batches ?? []);
       const block = policyBlockForApplication(row, offers, selectedBy, policy);
       const offer = offers.find((o) => o.application_id === row.id) ?? null;
-      const placedAt = offers.find((o) => o.student_id === row.student_id && o.status === "accepted") ?? null;
+      const placedAt = offers.find((o) => o.student_id === row.student_id && o.status === "placed") ?? null;
       return { ...row, eligible: ev.eligible && !block, reasons: block ? [block, ...ev.reasons] : ev.reasons, policyBlock: block, offer, placedAt };
     });
   }, [query.data, rulesQuery.data, offersQuery.data, policyQuery.data]);
@@ -253,7 +253,7 @@ function AdminApplications() {
             <FilterSelect label="Company" value={f.company} onChange={(v) => setF({ ...f, company: v })} options={companies} />
             <FilterSelect label="Status" value={f.status} onChange={(v) => setF({ ...f, status: v })} options={APP_STATUSES.map((s) => [s, APPLICATION_STATUS_LABELS[s]])} />
             <FilterSelect label="Eligibility" value={f.eligibility} onChange={(v) => setF({ ...f, eligibility: v })} options={[["eligible", "Eligible"], ["ineligible", "Not eligible"]]} />
-            <FilterSelect label="Placement / offer" value={f.placement} onChange={(v) => setF({ ...f, placement: v })} options={[["placed", "Placed"], ["unplaced", "Unplaced"], ["released", "Offer pending"], ["accepted", "Offer accepted"], ["declined", "Offer declined"]]} />
+            <FilterSelect label="Placement / offer" value={f.placement} onChange={(v) => setF({ ...f, placement: v })} options={[["placed", "Placed"], ["unplaced", "Unplaced"], ["released", "Offer received"], ["accepted", "Offer accepted"], ["declined", "Offer declined"]]} />
             <FilterSelect label="Graduation year" value={f.year} onChange={(v) => setF({ ...f, year: v })} options={years.map((y) => [String(y), String(y)])} />
             <div className="space-y-1">
               <Label className="text-xs text-muted-foreground">Minimum CGPA</Label>
