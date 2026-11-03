@@ -5,14 +5,14 @@ export function BrandMark({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex size-9 shrink-0 items-center justify-center rounded-md bg-primary/10",
+        "flex h-9 shrink-0 items-center justify-center rounded-md bg-primary/10 px-1.5",
         className,
       )}
     >
       <img
         src={logoAsset.url}
         alt="HirePhoenix logo"
-        className="max-h-full max-w-full object-contain"
+        className="h-7 w-auto object-contain"
         draggable={false}
       />
     </div>
