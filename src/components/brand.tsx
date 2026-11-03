@@ -1,15 +1,20 @@
+import logoAsset from "@/assets/hirephoenix.png.asset.json";
 import { cn } from "@/lib/utils";
 
 export function BrandMark({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold",
+        "flex h-9 shrink-0 items-center justify-center rounded-md bg-primary/10 ring-1 ring-inset ring-primary/10 dark:bg-primary-foreground/90 dark:ring-transparent",
         className,
       )}
-      aria-hidden
     >
-      HP
+      <img
+        src={logoAsset.url}
+        alt="HirePhoenix logo"
+        className="h-7 w-auto object-contain"
+        draggable={false}
+      />
     </div>
   );
 }
