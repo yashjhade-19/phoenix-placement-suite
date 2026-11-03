@@ -240,7 +240,7 @@ function AdminReports() {
 
   function exportReport() {
     const d = data;
-    if (!d.pool.length) return toast.error("No data matches your filters to export");
+    if (!d.pool.length) { toast.error("No data matches your filters to export"); return; }
     const rows: unknown[][] = [];
     const filterText = activeChips.length ? activeChips.map((c) => c[1]).join("; ") : "None";
     rows.push(["Filters", filterText], []);
