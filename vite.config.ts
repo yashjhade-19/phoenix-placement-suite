@@ -12,4 +12,6 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Pre-bundle recharts with React so a late dep re-optimization can't load a second React copy.
+  vite: { optimizeDeps: { include: ["recharts", "react", "react-dom"] } },
 });
