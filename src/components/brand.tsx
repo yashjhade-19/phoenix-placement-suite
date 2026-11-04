@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/hirephoenix.png.asset.json";
+import logoAsset from "@/assets/hirephoenix-tight.png.asset.json";
 import { cn } from "@/lib/utils";
 
 export function BrandMark({ className }: { className?: string }) {
@@ -6,7 +6,7 @@ export function BrandMark({ className }: { className?: string }) {
     <img
       src={logoAsset.url}
       alt="HirePhoenix logo"
-      className={cn("h-10 w-auto shrink-0 object-contain", className)}
+      className={cn("h-11 w-auto shrink-0 object-contain", className)}
       draggable={false}
     />
   );
